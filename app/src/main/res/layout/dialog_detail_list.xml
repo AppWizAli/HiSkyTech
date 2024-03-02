@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:background="#454343"
+android:layout_height="match_parent">
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Detail Pannel"
+    android:layout_centerHorizontal="true"
+    android:textSize="22sp"
+    android:id="@+id/detail_pannel"
+    android:textColor="#EAE4E4"
+    android:layout_marginTop="49dp"
+    />
+<Button
+    android:layout_width="230dp"
+    android:layout_height="wrap_content"
+    android:text="Add Annoucemnt"
+    android:background="#146D97"
+    android:layout_below="@+id/detail_pannel"
+    android:id="@+id/add_annoucement"
+    android:layout_marginStart="17dp"
+    android:layout_marginTop="29dp"
+    />
+<Button
+    android:layout_width="230dp"
+    android:layout_height="wrap_content"
+    android:text="Add Course"
+    android:background="#146D97"
+    android:layout_below="@+id/add_annoucement"
+    android:id="@+id/add_course"
+    android:layout_marginStart="17dp"
+    android:layout_marginTop="29dp"
+    />
+<Button
+    android:layout_width="230dp"
+    android:layout_height="wrap_content"
+    android:text="Add Completed Project"
+    android:background="#146D97"
+    android:layout_below="@+id/add_course"
+    android:id="@+id/add_completed_projects"
+    android:layout_marginStart="17dp"
+    android:layout_marginTop="29dp"
+    />
+<Button
+    android:layout_width="230dp"
+    android:layout_height="wrap_content"
+    android:text="Add Team Member"
+    android:background="#146D97"
+    android:layout_below="@+id/add_completed_projects"
+    android:id="@+id/add_team_member"
+    android:layout_marginStart="17dp"
+    android:layout_marginTop="29dp"
+    />
+<Button
+    android:layout_width="230dp"
+    android:layout_height="wrap_content"
+    android:text="Add New Job"
+    android:background="#146D97"
+    android:layout_below="@+id/add_team_member"
+    android:id="@+id/add_job"
+    android:layout_marginStart="17dp"
+    android:layout_marginTop="29dp"
+    />
+
+
+
+
+</RelativeLayout>

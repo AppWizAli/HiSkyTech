@@ -1,0 +1,43 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.HiSkyTechPortfolio" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#2CBFC7</item>
+        <item name="colorPrimaryVariant">@color/PrimaryVariant</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/SecondaryVariant</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">#2CBFC7</item>
+        <!-- Customize your theme here. -->
+    </style>
+    <style name="CustomTabLayoutTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="Base.Theme.HiSkyTechPortfolio.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Base.Theme.HiSkyTechPortfolio.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Base.Theme.HiSkyTechPortfolio.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="BottomNavigationStyle">
+        <item name="android:itemTextAppearance">@style/BottomNavigationTextAppearance</item>
+    </style>
+
+    <style name="BottomNavigationTextAppearance">
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="Theme.MyApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@drawable/ic_launcher_background</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/black_m</item>
+    </style>
+
+
+    <!-- Create a custom style for your activity background -->
+    <style name="AppTheme" parent="Base.Theme.HiSkyTechPortfolio">
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+</resources>

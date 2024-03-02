@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">UserUrduBolo</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="uplaod">uplaod</string>
+    <string-array name="roles_array">
+        <item>Owner</item>
+        <item>Editor</item>
+        <!-- Add more roles as needed -->
+    </string-array>
+
+    <style name="TransparentTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+    </style>
+
+    <style name="FullWidthDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+</resources>
+

@@ -5,6 +5,20 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragments.HomeFragments">
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/recyclerView"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Noting to show "
+        android:id="@+id/nothing"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        />
 
 <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
     android:layout_width="wrap_content"

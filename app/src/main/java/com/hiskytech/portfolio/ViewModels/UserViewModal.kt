@@ -5,8 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import com.hiskytech.portfolio.Data.Repo
 
-class UserViewModal(context: Application) : AndroidViewModel(context) {
+class UserViewModal : ViewModel() {
 
-    var repo = Repo(context)
 
 }

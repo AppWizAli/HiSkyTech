@@ -1,7 +1,7 @@
 package com.hiskytech.portfolio.Data
 
 class Constants {
-    public var VIDEO_COLLECTION="Videos"
+    public var Course_Collection="Courses"
     public var USER_COLLECTION="Users"
     public var BANNER_COLLECTION="Banner"
     public var GROUP_COLLECTION="Groups"

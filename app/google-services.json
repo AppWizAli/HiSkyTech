@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "210595107133",
-    "project_id": "hiskytech-portfolio",
-    "storage_bucket": "hiskytech-portfolio.appspot.com"
+    "project_number": "157325783257",
+    "project_id": "first-firebase-46cfe",
+    "storage_bucket": "first-firebase-46cfe.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:210595107133:android:cd76dc13446176469cb554",
+        "mobilesdk_app_id": "1:157325783257:android:7d93801aa16c4af41e4ec8",
         "android_client_info": {
           "package_name": "com.hiskytech.portfolio"
         }
@@ -15,7 +15,26 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD87GBb_yW_XUF-j483YIi7Y0rZW7GyVuE"
+          "current_key": "AIzaSyBxoeCK70S0WvT-U8184L6jRFloMKrTDqc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:157325783257:android:dc1f9fc30239267a1e4ec8",
+        "android_client_info": {
+          "package_name": "com.naseeb.homegarden"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxoeCK70S0WvT-U8184L6jRFloMKrTDqc"
         }
       ],
       "services": {

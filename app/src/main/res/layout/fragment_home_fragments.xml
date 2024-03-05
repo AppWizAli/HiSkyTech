@@ -3,22 +3,84 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/PrimaryVariant"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragments.HomeFragments">
-    <androidx.recyclerview.widget.RecyclerView
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/recyclerView"
-        />
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Courses "
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="9dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:id="@+id/courses"
+            android:layout_marginBottom="9dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="view all"
+            android:textStyle="bold"
+            android:id="@+id/viewAll"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="9dp"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recyclerView"
+            android:layout_below="@+id/courses"
+            />
+    </RelativeLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Noting to show "
-        android:id="@+id/nothing"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        />
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jobs "
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="9dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:id="@+id/jobs"
+            android:layout_marginBottom="9dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="view all"
+            android:textStyle="bold"
+            android:id="@+id/viewall"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="9dp"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rv_Job"
+            android:layout_below="@+id/jobs"
+            />
+    </RelativeLayout>
+</LinearLayout>
+
+
 
 <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
     android:layout_width="wrap_content"

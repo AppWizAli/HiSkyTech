@@ -3,7 +3,6 @@ package com.hiskytech.portfolio.Fragments
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Application
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -19,27 +18,26 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import com.hiskytech.portfolio.Adapters.CoursesAdapter
+import com.hiskytech.portfolio.Adapters.JobAdapter
 import com.hiskytech.portfolio.Data.Constants
 import com.hiskytech.portfolio.Data.SharedPrefManager
 import com.hiskytech.portfolio.Data.Utils
 import com.hiskytech.portfolio.Models.AnnoucementModal
 import com.hiskytech.portfolio.Models.CourseModal
+import com.hiskytech.portfolio.Models.JobModal
 import com.hiskytech.portfolio.R
 import com.hiskytech.portfolio.ViewModels.CourseViewModal
 import com.hiskytech.portfolio.databinding.FragmentHomeFragmentsBinding
-import java.util.UUID
 
-class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
+class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapter.OnItemClickListener{
     private lateinit var binding: FragmentHomeFragmentsBinding
+    private lateinit var dialogDetail: Dialog
     private lateinit var dialog: Dialog
     private val db = Firebase.firestore
    private lateinit var  courseViewModel: CourseViewModal
@@ -47,6 +45,11 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
     private lateinit var contants: Constants
     private lateinit var mContext: Context
     private var imageURI: Uri? = null
+    private  var imageUriSecond: Uri? = null
+    private lateinit var jobModal: JobModal
+    private lateinit var annoucementModal: AnnoucementModal
+    private  var getText:String = "view all"
+    private var imagecode:Int = 100
     private lateinit var courseModal :CourseModal
     private var private = 110
     private var deleteDialog: AlertDialog? = null
@@ -65,29 +68,39 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
         mContext = requireContext()
         courseViewModel = ViewModelProvider(this@HomeFragments).get(CourseViewModal::class.java)
         courseModal = CourseModal()
+        annoucementModal = AnnoucementModal()
+        jobModal = JobModal()
 
 
         binding.detailFloating.setOnClickListener()
         {
             ShowDetaildialogue()
         }
+        setAdapter()
+        setAdapterJobs()
         return binding.root
     }
 
     @SuppressLint("CutPasteId")
     private fun ShowDetaildialogue() {
-        dialog = Dialog(requireContext(), R.style.FullWidthDialog)
-        dialog.setContentView(R.layout.dialog_detail_list)
-        dialog.setCancelable(false)
+        dialogDetail = Dialog(requireContext(), R.style.FullWidthDialog)
+        dialogDetail.setContentView(R.layout.dialog_detail_list)
+        dialogDetail.setCancelable(false)
 
-        var add_annoucement = dialog.findViewById<Button>(R.id.add_annoucement)
-        var add_Course = dialog.findViewById<Button>(R.id.add_course)
-        var add_completed_projects = dialog.findViewById<Button>(R.id.add_completed_projects)
-        var add_team_member = dialog.findViewById<Button>(R.id.add_team_member)
-        var add_job = dialog.findViewById<Button>(R.id.add_job)
+        var add_annoucement = dialogDetail.findViewById<Button>(R.id.add_annoucement)
+        var add_Course = dialogDetail.findViewById<Button>(R.id.add_course)
+        var add_completed_projects = dialogDetail.findViewById<Button>(R.id.add_completed_projects)
+        var add_team_member = dialogDetail.findViewById<Button>(R.id.add_team_member)
+        var add_job = dialogDetail.findViewById<Button>(R.id.add_job)
+        var back = dialogDetail.findViewById<ImageView>(R.id.back)
+        back.setOnClickListener()
+        {
+            dialogDetail.dismiss()
+        }
 
         add_annoucement.setOnClickListener()
         {
+            dialogDetail.dismiss()
             dialog = Dialog(requireContext(), R.style.FullWidthDialog)
             dialog.setContentView(R.layout.dialogue_add_annoucement)
             dialog.setCancelable(false)
@@ -99,13 +112,32 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
 
             var next = dialog.findViewById<Button>(R.id.add)
             var cancel = dialog.findViewById<Button>(R.id.cancel)
-            cancel.setOnClickListener()
+            cancel.setOnClickListener() { dialog.dismiss() }
+            annoucement_image.setOnClickListener()
             {
-                dialog.dismiss()
+                val pickImage =
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
             }
+            annoucement_display_image.setOnClickListener()
+            {
+                imagecode = 120
+                val pickImage =
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
+            }
+
             next.setOnClickListener()
             {
-                var annoucement_modal = AnnoucementModal()
+               annoucementModal.title = annoucement_title.text.toString()
+                annoucementModal.description = annoucement_des.text.toString()
+                if (annoucement_title.text.toString().isEmpty() || annoucement_des.text.toString().isEmpty()
+                ) {
+                    Toast.makeText(mContext, "Please Enter All fields", Toast.LENGTH_SHORT).show()
+                } else {
+
+                    annoucementAdd()
+                }
             }
 
             dialog.show()
@@ -115,6 +147,7 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
         ////////////////////////////////////////////
         add_Course.setOnClickListener()
         {
+            dialogDetail.dismiss()
             dialog = Dialog(requireContext(), R.style.FullWidthDialog)
             dialog.setContentView(R.layout.dialogue_add_course)
             dialog.setCancelable(false)
@@ -126,16 +159,12 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
             var add = dialog.findViewById<Button>(R.id.add)
             var cancl = dialog.findViewById<Button>(R.id.cancel)
 
-            course_image.setOnClickListener()
-            {
+            course_image.setOnClickListener() {
                 val pickImage =
                     Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                 startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
             }
-            cancl.setOnClickListener()
-            {
-                dialog.dismiss()
-            }
+            cancl.setOnClickListener() { dialog.dismiss() }
             add.setOnClickListener()
             {
                 courseModal.title = course_title.text.toString()
@@ -154,6 +183,7 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
         }
         add_completed_projects.setOnClickListener()
         {
+            dialogDetail.dismiss()
             dialog = Dialog(requireContext(), R.style.FullWidthDialog)
             dialog.setContentView(R.layout.dialogue_add_completed_projects)
             dialog.setCancelable(false)
@@ -161,6 +191,7 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
         }
         add_team_member.setOnClickListener()
         {
+            dialogDetail.dismiss()
             dialog = Dialog(requireContext(), R.style.FullWidthDialog)
             dialog.setContentView(R.layout.dialogue_add_team_member)
             dialog.setCancelable(false)
@@ -168,38 +199,119 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
         }
         add_job.setOnClickListener()
         {
+            dialogDetail.dismiss()
             dialog = Dialog(requireContext(), R.style.FullWidthDialog)
             dialog.setContentView(R.layout.dialogue_add_new_job)
             dialog.setCancelable(false)
+            var job_title = dialog.findViewById<EditText>(R.id.Title_job)
+            var description = dialog.findViewById<EditText>(R.id.Job_Description)
+            var salary = dialog.findViewById<EditText>(R.id.salary)
+            var company = dialog.findViewById<EditText>(R.id.company_name)
+            var location = dialog.findViewById<EditText>(R.id.location)
+            var dcancel = dialog.findViewById<Button>(R.id.cancel)
+            var add = dialog.findViewById<Button>(R.id.add)
+            dcancel.setOnClickListener(){ dialog.dismiss() }
+            add.setOnClickListener()
+            {
+                jobModal.title = job_title.text.toString()
+                jobModal.description = description.text.toString()
+                jobModal.sallary = salary.text.toString()
+                jobModal.companyName = company.text.toString()
+                jobModal.location = location.text.toString()
+
+                if (job_title.text.toString().isEmpty() || description.text.toString().isEmpty() || salary.text.toString().isEmpty()|| company.text.toString().isEmpty() || location.text.toString().isEmpty()
+                ) {
+                    Toast.makeText(mContext, "Please Enter All fields", Toast.LENGTH_SHORT).show()
+                }
+                else {
+
+                    courseViewModel.add_Job(jobModal).observe(requireActivity()) { success ->
+                        if (success) {
+                            Toast.makeText(requireContext(), "added", Toast.LENGTH_SHORT).show()
+                            setAdapterJobs()
+                            dialog.dismiss()
+
+                        } else {
+                            Toast.makeText(requireContext(), "failed", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
             dialog.show()
 
         }
 
-        dialog.show()
+        dialogDetail.show()
     }
 
+
+        private fun setAdapterJobs()
+    {
+        val listjob = ArrayList<JobModal>()
+
+        courseViewModel.get_job_list().addOnSuccessListener(){
+            taskResult->
+            if (taskResult != null)
+            {
+                if (taskResult.size()>0)
+                {
+                    for (document in taskResult)
+                    {
+                        listjob.add(document.toObject(jobModal::class.java))
+                        listjob.sortBy { it.title }
+                    }
+                }
+                binding.rvJob.layoutManager = LinearLayoutManager(mContext)
+                binding.rvJob.adapter = JobAdapter(mContext, listjob.take(2), this@HomeFragments)
+                binding.viewall.setOnClickListener()
+                {
+                    var showText = binding.viewall.text
+                    if (showText == getText)
+                    {
+                        binding.rvJob.adapter = JobAdapter(mContext, listjob, this@HomeFragments)
+                        binding.viewall.setText("Merge All")
+                    }
+                    else{
+                        binding.rvJob.adapter = JobAdapter(mContext, listjob.take(2), this@HomeFragments)
+                        binding.viewall.setText(getText)
+                    }
+
+                }
+
+
+            }
+        }
+
+    }
     private fun setAdapter() {
         val list = ArrayList<CourseModal>()
        courseViewModel.getCourseList().addOnSuccessListener { taskResult->
 
             if (taskResult != null) {
-                // Check if the task result is not null, indicating a successful result
                 if (taskResult.size() > 0) {
                     for (document in taskResult) {
                         list.add(document.toObject(CourseModal::class.java))
+                        list.sortBy { it.title }
                     }
                 }
-                val sortedList = list.sortedBy { it.title?.toIntOrNull() ?: 0 }
-                if (list.isEmpty()) {
-                    binding.nothing.visibility = View.VISIBLE
+
                     binding.recyclerView.layoutManager = LinearLayoutManager(mContext)
-                    binding.recyclerView.adapter = CoursesAdapter(mContext, sortedList, this@HomeFragments)
-                } else {
-                    binding.nothing.visibility = View.GONE
-                    binding.recyclerView.layoutManager = LinearLayoutManager(mContext)
-                    binding.recyclerView.adapter = CoursesAdapter(mContext, sortedList, this@HomeFragments)
+                    binding.recyclerView.adapter = CoursesAdapter(mContext, list.take(2), this@HomeFragments)
+                binding.viewAll.setOnClickListener()
+                {
+                   var showText = binding.viewAll.text
+                    if (showText == getText)
+                    {
+                        binding.recyclerView.adapter = CoursesAdapter(mContext, list, this@HomeFragments)
+                        binding.viewAll.setText("Merge All")
+                    }
+                    else{
+                        binding.recyclerView.adapter = CoursesAdapter(mContext, list.take(2), this@HomeFragments)
+                        binding.viewAll.setText(getText)
+                    }
 
                 }
+
 
             } else {
                 Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT)
@@ -210,156 +322,264 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == IMAGE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            imageURI = data?.data
+            if (imagecode == 120)
+            {
+                imageUriSecond =  data?.data
+            }
+            else
+            {
+                imageURI = data?.data
+            }
+
 
 
         }
+    }
+    private fun annoucementAdd()
+    {
+        if (imageURI != null) {
+            if (imageUriSecond != null) {
+                uploadThumbnailImage(imageURI!!) { thumbnailUrl ->
+                    if (thumbnailUrl != null) {
+                        annoucementModal.thumnail = thumbnailUrl
+
+                        uploadThumbnailImage(imageUriSecond!!){
+                            if (thumbnailUrl != null)
+                            {
+                                annoucementModal.thumnailSecond = thumbnailUrl
+                                courseViewModel.addAnnoucement(annoucementModal)
+                                    .observe(requireActivity()) { success ->
+                                        if (success) {
+                                            Toast.makeText(
+                                                mContext,
+                                                "Created successfully",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+
+                                            setAdapter()
+                                            dialog.dismiss()
+                                        } else {
+                                            Toast.makeText(
+                                                mContext,
+                                                "Something went wrong",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            // dialog.dismiss() // Assuming 'dialog' is defined elsewhere
+                                        }
+                                    }
+                            }
+                        }
+                    } else {
+                        Toast.makeText(
+                            mContext,
+                            "Failed to upload the thumbnail image.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+            else{
+                Toast.makeText(requireContext(), "image uri display is not selected", Toast.LENGTH_SHORT).show()
+            }
+        }
+        else{
+            Toast.makeText(requireContext(), "image uri is not selected", Toast.LENGTH_SHORT).show()
+        }
+
     }
     private fun handleUploadButtonClick() {
-        courseViewModel.add_course(courseModal).observe(requireActivity()) { success ->
-            if (success) {
-                Toast.makeText(
-                    mContext,
-                    "Created successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
-                // dialog.dismiss() // Assuming 'dialog' is defined elsewhere
+        if (imageURI != null) {
+            uploadThumbnailImage(imageURI!!) { thumbnailUrl ->
+                if (thumbnailUrl != null) {
+                    courseModal.thumbnail = thumbnailUrl
+                    courseViewModel.add_course(courseModal).observe(requireActivity()) { success ->
+                        if (success) {
+                            Toast.makeText(
+                                mContext,
+                                "Created successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
 
-                // Call the method to set the adapter
-//                setAdapter()
-            } else {
-                Toast.makeText(
-                    mContext,
-                    "Something went wrong",
-                    Toast.LENGTH_SHORT
-                ).show()
-                // dialog.dismiss() // Assuming 'dialog' is defined elsewhere
+                            setAdapter()
+                            dialog.dismiss()
+                        } else {
+                            Toast.makeText(
+                                mContext,
+                                "Something went wrong",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            // dialog.dismiss() // Assuming 'dialog' is defined elsewhere
+                        }
+                    }
+                } else {
+                    Toast.makeText(
+                        mContext,
+                        "Failed to upload the thumbnail image.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
-//        if (imageURI != null) {
-//            // Upload the thumbnail image to Firebase Storage
-//            uploadImage(imageURI!!)
-//        } else {
-//            Toast.makeText(
-//                mContext,
-//                "Please select a thumbnail image.",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }
-    }
-
-//    private fun uploadThumbnailImage(imageUri: Uri, callback: (String?) -> Unit) {
-//        val storageRef = Firebase.storage.reference.child("images/${UUID.randomUUID()}.jpg")
-//        val uploadTask = storageRef.putFile(imageUri)
-//
-//        uploadTask.addOnSuccessListener { taskSnapshot ->
-//            // Upload successful, get download URL
-//            taskSnapshot.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
-//                callback(downloadUrl.toString())
-//            }.addOnFailureListener { exception ->
-//                // Handle download URL failure (even if upload succeeded)
-//                Toast.makeText(mContext, "Failed to get download URL: $exception", Toast.LENGTH_SHORT).show()
-//                callback(null)
-//            }
-//        }
-//    }
-//    private fun uploadThumbnailImage(imageUri: Uri, callback: (String?) -> Unit) {
-//        val storageRef = Firebase.storage.reference.child("thumbnails/${System.currentTimeMillis()}_${imageUri.lastPathSegment}")
-//        storageRef.putFile(imageUri)
-//            .addOnSuccessListener { taskSnapshot ->
-//                taskSnapshot.storage.downloadUrl.addOnSuccessListener() { downloadUrlTask ->
-//                        Toast.makeText(requireContext(), ""+downloadUrlTask, Toast.LENGTH_SHORT).show()
-//                        val downloadUrl = downloadUrlTask.toString()
-//                        callback(downloadUrl)
-//                }
-//            }
-//            .addOnFailureListener {
-//                callback(null)
-//            }
-//    }
-
-
-    private fun uploadImage(imageUri: Uri) {
-        // Use a unique path for each image using UUID.randomUUID()
-        val path = "images/${UUID.randomUUID()}.jpg"
-
-        // Use the correct function parameter name imageUri instead of imageURI
-        uploadImageToFirebase(path, imageUri) { imageRef ->
-            // Image uploaded successfully, now get the download URL
-            getImageDownloadUrl(imageRef)
+        else{
+            Toast.makeText(requireContext(), "image uri is not selected", Toast.LENGTH_SHORT).show()
         }
     }
-
-    private fun uploadImageToFirebase(path: String, imageUri: Uri, onSuccess: (StorageReference) -> Unit) {
-        val storageRef = FirebaseStorage.getInstance().reference
-        val imageRef = storageRef.child(path)
-
-        // Proceed with the upload
-        imageRef.putFile(imageUri)
-            .addOnSuccessListener { taskSnapshot ->
-                onSuccess(storageRef.child(path))
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(requireContext(), "Upload failed: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-// Remove the unnecessary path and imageUri definitions here
-// ...
-
-// Call uploadImage with the actual image Uri when needed
-// val imageUri = // your image Uri here
-// uploadImage(imageUri)
-
-    private fun getImageDownloadUrl(imageRef: StorageReference) {
-        imageRef.downloadUrl
-            .addOnSuccessListener { uri ->
-                // Now 'uri' contains the download URL, you can store it in Firestore
-                storeImageUrlInFirestore(uri.toString())
-            }
-            .addOnFailureListener { exception ->
-                // Handle failure to get download URL
-                Toast.makeText(requireContext(), "Failed to get download URL: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun storeImageUrlInFirestore(downloadUrl: String) {
-
-        courseModal.thumbnail = downloadUrl.toString()
-        // Assuming you have a function named add_course in your courseViewModel
-        courseViewModel.add_course(courseModal).observe(requireActivity()) { success ->
-            if (success) {
-                Toast.makeText(
-                    mContext,
-                    "Created successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
-                // dialog.dismiss() // Assuming 'dialog' is defined elsewhere
-
-                // Call the method to set the adapter
-                setAdapter()
-            } else {
-                Toast.makeText(
-                    mContext,
-                    "Something went wrong",
-                    Toast.LENGTH_SHORT
-                ).show()
-                // dialog.dismiss() // Assuming 'dialog' is defined elsewhere
-            }
-        }
-    }
-
-
+    ////////////////////////View item code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     override fun onItemClick(coursemodal: CourseModal) {
 
+        Toast.makeText(requireActivity(), "view", Toast.LENGTH_SHORT).show()
     }
+
+    ////////////////////////Delete code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     override fun onDeleteClick(coursemodal: CourseModal) {
+        val builder = AlertDialog.Builder(mContext)
+        builder.setTitle("Confirmation")
+            .setMessage("Are you sure you want to delete?")
+            .setPositiveButton("Yes") { _, _ ->
+                performDeleteAction(coursemodal)
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+        deleteDialog = builder.create()
+        deleteDialog?.show()
+    }
+    private fun performDeleteAction(coursemodal: CourseModal) {
+        courseViewModel.deleteDrama(coursemodal)
+            .observe(this@HomeFragments) { success ->
+                if (success) {
+                    Toast.makeText(
+                        mContext,
+                        "Drama Deleted Successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    deleteDialog?.dismiss() // Dismiss the dialog here
+                    setAdapter()
+                } else {
+                    Toast.makeText(
+                        mContext,
+                        constants.SOMETHING_WENT_WRONG_MESSAGE,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    deleteDialog?.dismiss() // Dismiss the dialog here
+                }
+            }
+    }
+
+    ////////////////////////Edit code //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    override fun onEditClick(courseModal: CourseModal) {
+        showEditDialog(courseModal)
+        Toast.makeText(requireContext(), "clicked", Toast.LENGTH_SHORT).show()
+    }
+    @SuppressLint("SuspiciousIndentation")
+    private fun showEditDialog(courseModal: CourseModal) {
+
+        val dialog = Dialog(mContext, R.style.FullWidthDialog)
+        dialog.setContentView(R.layout.dialogue_add_course)
+
+        var course_title = dialog.findViewById<EditText>(R.id.course_title)
+        var course_des = dialog.findViewById<EditText>(R.id.course_description)
+        var course_image = dialog.findViewById<TextView>(R.id.select_image_course)
+        var course_language = dialog.findViewById<EditText>(R.id.course_language)
+        var add = dialog.findViewById<Button>(R.id.add)
+        var cancl = dialog.findViewById<Button>(R.id.cancel)
+
+        course_title.setText(courseModal.title)
+        course_des.setText(courseModal.description)
+        course_language.setText(courseModal.language)
+
+        dialog.setCancelable(false)
+
+        cancl.setOnClickListener { dialog.dismiss() }
+
+        course_image.setOnClickListener {
+             val pickImage =
+                 Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+             startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
+        }
+
+        add.setOnClickListener {
+            val courseTitle = course_title.text.toString()
+            val courseDes = course_des.text.toString()
+            val courselan = course_language.text.toString()
+
+            if (courseTitle.isEmpty() || courseDes.isEmpty() || imageURI.toString()
+                    .isEmpty()
+            ) {
+                Toast.makeText(mContext, "Please Enter All fields", Toast.LENGTH_SHORT).show()
+            } else {
+                courseModal.title = courseTitle
+                courseModal.description = courseDes
+                courseModal.language = courselan
+                if (imageURI != null) {
+                    uploadThumbnailImage(imageURI!!) { thumbnailUrl ->
+                        if (thumbnailUrl != null) {
+                            courseModal.thumbnail = thumbnailUrl
+                                courseViewModel.updateCourse(courseModal)
+                                    .observe(requireActivity()) { success ->
+                                        if (success) {
+                                            Toast.makeText(
+                                                mContext,
+                                                "Course updated successfully",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            setAdapter()
+                                            dialog.dismiss()
+
+                                        } else {
+                                            utils.endLoadingAnimation()
+                                            Toast.makeText(
+                                                mContext,
+                                                "Failed to update the Course",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+                        } else {
+                            Toast.makeText(
+                                mContext,
+                                "Failed to upload the thumbnail image.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+                else{
+                    Toast.makeText(requireContext(), "image uri is not selected", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        dialog.show()
+    }
+    private fun uploadThumbnailImage(imageUri: Uri, callback: (String?) -> Unit) {
+        val storageRef = Firebase.storage.reference.child("thumbnails/${System.currentTimeMillis()}_${imageUri.lastPathSegment}")
+        storageRef.putFile(imageUri)
+            .addOnSuccessListener { taskSnapshot ->
+                taskSnapshot.storage.downloadUrl.addOnCompleteListener { downloadUrlTask ->
+                    if (downloadUrlTask.isSuccessful) {
+                        val downloadUrl = downloadUrlTask.result.toString()
+                        callback(downloadUrl)
+                    } else {
+                        callback(null)
+                    }
+                }
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
+    }
+
+    override fun onItemClick(jobModal: JobModal) {
 
     }
 
-    override fun onEditClick(coursemodal: CourseModal) {
+    override fun onDeleteClick(jobModal: JobModal) {
+
+    }
+
+    override fun onEditClick(jobModal: JobModal) {
 
     }
 }

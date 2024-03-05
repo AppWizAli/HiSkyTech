@@ -7,6 +7,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.QuerySnapshot
+import com.hiskytech.portfolio.Models.AnnoucementModal
 import com.hiskytech.portfolio.Models.CourseModal
 import com.hiskytech.portfolio.ViewModels.CourseViewModal
 
@@ -22,7 +23,7 @@ class Repo(var context: CourseViewModal) {
     private val storageRef = firebaseStorage.reference
     private var courseCollection= db.collection(constants.Course_Collection)
     private var UserCollection = db.collection(constants.USER_COLLECTION)
-    private var BannerCollection = db.collection(constants.BANNER_COLLECTION)
+    private var annoucementCollection = db.collection(constants.ANNOUCEMENT_COLLECTION)
     private var GroupCollection = db.collection(constants.GROUP_COLLECTION)
     private var AdminCollection = db.collection(constants.ADMIN_COLLECTION)
     private var DramaCollection = db.collection(constants.DRAMA_COLLECTION)
@@ -40,7 +41,7 @@ class Repo(var context: CourseViewModal) {
     fun add_course(course_modal:CourseModal):LiveData<Boolean>
     {
         var result = MutableLiveData<Boolean>()
-        db.collection(constants.Course_Collection).add(course_modal).addOnSuccessListener()
+       courseCollection.add(course_modal).addOnSuccessListener()
         {document->
             course_modal.docID = document.id
 
@@ -61,6 +62,59 @@ class Repo(var context: CourseViewModal) {
 
  fun getCourseList(): Task<QuerySnapshot> {
        return courseCollection.get()
+    }
+
+    fun deleteDrama(coursemodal: CourseModal): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        courseCollection.document(coursemodal.docID).delete()
+            .addOnSuccessListener {
+                result.value = true
+                // Deletion successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value = false
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
+
+    fun updateCourse(courseModal: CourseModal): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        courseCollection.document(courseModal.docID).set(courseModal)
+            .addOnSuccessListener {
+                result.value = true
+                // Update successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value = false
+
+                // Handle failure scenarios if needed
+            }
+        return result
+
+    }
+
+    fun add_Annoucement(annoucementModal: AnnoucementModal): LiveData<Boolean> {
+
+        var result = MutableLiveData<Boolean>()
+        annoucementCollection.add(annoucementModal).addOnSuccessListener()
+        {document->
+            annoucementModal.docID = document.id
+
+            db.collection(annoucementCollection.toString()).document(document.id).set(annoucementModal)
+                .addOnSuccessListener()
+                {
+                    result.value = true
+                }.addOnFailureListener()
+                {e->
+                    result.value = false
+                }
+
+        }.addOnFailureListener()
+        {
+            result.value = false
+        }
+        return result
     }
 
     /*

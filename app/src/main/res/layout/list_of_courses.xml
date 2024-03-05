@@ -33,7 +33,7 @@
             android:text="Artegrul"
             android:textColor="@color/white"
             android:textStyle="bold"
-            android:id="@+id/drama_name"/>
+            android:id="@+id/course_name"/>
 
 
 

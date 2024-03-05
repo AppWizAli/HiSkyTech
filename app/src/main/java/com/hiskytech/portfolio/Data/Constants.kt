@@ -3,7 +3,7 @@ package com.hiskytech.portfolio.Data
 class Constants {
     public var Course_Collection="Courses"
     public var USER_COLLECTION="Users"
-    public var BANNER_COLLECTION="Banner"
+    public var ANNOUCEMENT_COLLECTION="Annoucement"
     public var GROUP_COLLECTION="Groups"
     public var DRAMA_COLLECTION="Drama"
     public var SEASON_COLLECTION="Season"

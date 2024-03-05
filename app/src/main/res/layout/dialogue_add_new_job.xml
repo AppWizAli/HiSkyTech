@@ -102,6 +102,7 @@
             android:layout_marginVertical="40dp"
             android:layout_marginHorizontal="60dp"
             android:text="Add "
+            android:id="@+id/add"
             />
         <Button
             android:layout_width="wrap_content"

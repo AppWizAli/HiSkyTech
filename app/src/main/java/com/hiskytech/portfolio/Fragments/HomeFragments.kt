@@ -171,6 +171,23 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
             dialog = Dialog(requireContext(), R.style.FullWidthDialog)
             dialog.setContentView(R.layout.dialogue_add_new_job)
             dialog.setCancelable(false)
+            var job_title = dialog.findViewById<EditText>(R.id.Title_job)
+ var description = dialog.findViewById<EditText>(R.id.Job_Description)
+ var salary = dialog.findViewById<EditText>(R.id.salary)
+ var company = dialog.findViewById<EditText>(R.id.company_name)
+            var location = dialog.findViewById<EditText>(R.id.location)
+var dcancel = dialog.findViewById<Button>(R.id.cancel)
+            dcancel.setOnClickListener(){
+                dialog.dismiss()
+            }
+
+
+
+
+
+
+
+
             dialog.show()
 
         }

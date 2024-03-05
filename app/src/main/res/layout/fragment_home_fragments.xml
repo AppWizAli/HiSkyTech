@@ -44,6 +44,40 @@
             android:layout_below="@+id/courses"
             />
     </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jobs "
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="9dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:id="@+id/jobs"
+            android:layout_marginBottom="9dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="view all"
+            android:textStyle="bold"
+            android:id="@+id/viewall"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="9dp"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rv_Job"
+            android:layout_below="@+id/jobs"
+            />
+    </RelativeLayout>
 </LinearLayout>
 
 

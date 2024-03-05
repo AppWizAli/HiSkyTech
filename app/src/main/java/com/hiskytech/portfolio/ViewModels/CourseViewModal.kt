@@ -7,6 +7,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.hiskytech.portfolio.Data.Repo
 import com.hiskytech.portfolio.Models.AnnoucementModal
 import com.hiskytech.portfolio.Models.CourseModal
+import com.hiskytech.portfolio.Models.JobModal
 
 class CourseViewModal: ViewModel() {
 
@@ -33,5 +34,13 @@ class CourseViewModal: ViewModel() {
     fun addAnnoucement(annoucementModal: AnnoucementModal): LiveData<Boolean>
     {
         return repo.add_Annoucement(annoucementModal)
+    }
+    fun add_Job(jobModal: JobModal):LiveData<Boolean>
+    {
+        return repo.add_Job(jobModal)
+    }
+    fun get_job_list():Task<QuerySnapshot>
+    {
+        return repo.get_job_list()
     }
 }

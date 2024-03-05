@@ -9,6 +9,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.QuerySnapshot
 import com.hiskytech.portfolio.Models.AnnoucementModal
 import com.hiskytech.portfolio.Models.CourseModal
+import com.hiskytech.portfolio.Models.JobModal
 import com.hiskytech.portfolio.ViewModels.CourseViewModal
 
 class Repo(var context: CourseViewModal) {
@@ -24,7 +25,7 @@ class Repo(var context: CourseViewModal) {
     private var courseCollection= db.collection(constants.Course_Collection)
     private var UserCollection = db.collection(constants.USER_COLLECTION)
     private var annoucementCollection = db.collection(constants.ANNOUCEMENT_COLLECTION)
-    private var GroupCollection = db.collection(constants.GROUP_COLLECTION)
+    private var jobCollection  = db.collection(constants.JOB_COLLECTION)
     private var AdminCollection = db.collection(constants.ADMIN_COLLECTION)
     private var DramaCollection = db.collection(constants.DRAMA_COLLECTION)
     private var SeasonCollection = db.collection(constants.SEASON_COLLECTION)
@@ -115,6 +116,32 @@ class Repo(var context: CourseViewModal) {
             result.value = false
         }
         return result
+    }
+    fun add_Job(jobModal: JobModal): LiveData<Boolean> {
+
+        var result = MutableLiveData<Boolean>()
+        jobCollection.add(jobModal).addOnSuccessListener()
+        {document->
+            jobModal.docID = document.id
+
+            jobCollection.document(document.id).set(jobModal)
+                .addOnSuccessListener()
+                {
+                    result.value = true
+                }.addOnFailureListener()
+                {e->
+                    result.value = false
+                }
+
+        }.addOnFailureListener()
+        {
+            result.value = false
+        }
+        return result
+    }
+
+    fun get_job_list(): Task<QuerySnapshot> {
+return jobCollection.get()
     }
 
     /*

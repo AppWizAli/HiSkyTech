@@ -6,7 +6,6 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -20,28 +19,23 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.hiskytech.portfolio.Adapters.CoursesAdapter
+import com.hiskytech.portfolio.Adapters.JobAdapter
 import com.hiskytech.portfolio.Data.Constants
 import com.hiskytech.portfolio.Data.SharedPrefManager
 import com.hiskytech.portfolio.Data.Utils
 import com.hiskytech.portfolio.Models.AnnoucementModal
 import com.hiskytech.portfolio.Models.CourseModal
+import com.hiskytech.portfolio.Models.JobModal
 import com.hiskytech.portfolio.R
 import com.hiskytech.portfolio.ViewModels.CourseViewModal
 import com.hiskytech.portfolio.databinding.FragmentHomeFragmentsBinding
-import kotlinx.coroutines.launch
-import java.util.UUID
-import kotlin.properties.Delegates
 
-class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
+class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapter.OnItemClickListener{
     private lateinit var binding: FragmentHomeFragmentsBinding
     private lateinit var dialogDetail: Dialog
     private lateinit var dialog: Dialog
@@ -52,6 +46,7 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
     private lateinit var mContext: Context
     private var imageURI: Uri? = null
     private  var imageUriSecond: Uri? = null
+    private lateinit var jobModal: JobModal
     private lateinit var annoucementModal: AnnoucementModal
     private  var getText:String = "view all"
     private var imagecode:Int = 100
@@ -74,6 +69,7 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
         courseViewModel = ViewModelProvider(this@HomeFragments).get(CourseViewModal::class.java)
         courseModal = CourseModal()
         annoucementModal = AnnoucementModal()
+        jobModal = JobModal()
 
 
         binding.detailFloating.setOnClickListener()
@@ -81,6 +77,7 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
             ShowDetaildialogue()
         }
         setAdapter()
+        setAdapterJobs()
         return binding.root
     }
 
@@ -207,22 +204,39 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener {
             dialog.setContentView(R.layout.dialogue_add_new_job)
             dialog.setCancelable(false)
             var job_title = dialog.findViewById<EditText>(R.id.Title_job)
- var description = dialog.findViewById<EditText>(R.id.Job_Description)
- var salary = dialog.findViewById<EditText>(R.id.salary)
- var company = dialog.findViewById<EditText>(R.id.company_name)
+            var description = dialog.findViewById<EditText>(R.id.Job_Description)
+            var salary = dialog.findViewById<EditText>(R.id.salary)
+            var company = dialog.findViewById<EditText>(R.id.company_name)
             var location = dialog.findViewById<EditText>(R.id.location)
-var dcancel = dialog.findViewById<Button>(R.id.cancel)
-            dcancel.setOnClickListener(){
-                dialog.dismiss()
+            var dcancel = dialog.findViewById<Button>(R.id.cancel)
+            var add = dialog.findViewById<Button>(R.id.add)
+            dcancel.setOnClickListener(){ dialog.dismiss() }
+            add.setOnClickListener()
+            {
+                jobModal.title = job_title.text.toString()
+                jobModal.description = description.text.toString()
+                jobModal.sallary = salary.text.toString()
+                jobModal.companyName = company.text.toString()
+                jobModal.location = location.text.toString()
+
+                if (job_title.text.toString().isEmpty() || description.text.toString().isEmpty() || salary.text.toString().isEmpty()|| company.text.toString().isEmpty() || location.text.toString().isEmpty()
+                ) {
+                    Toast.makeText(mContext, "Please Enter All fields", Toast.LENGTH_SHORT).show()
+                }
+                else {
+
+                    courseViewModel.add_Job(jobModal).observe(requireActivity()) { success ->
+                        if (success) {
+                            Toast.makeText(requireContext(), "added", Toast.LENGTH_SHORT).show()
+                            setAdapterJobs()
+                            dialog.dismiss()
+
+                        } else {
+                            Toast.makeText(requireContext(), "failed", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
-
-
-
-
-
-
-
-
             dialog.show()
 
         }
@@ -230,6 +244,45 @@ var dcancel = dialog.findViewById<Button>(R.id.cancel)
         dialogDetail.show()
     }
 
+
+        private fun setAdapterJobs()
+    {
+        val listjob = ArrayList<JobModal>()
+
+        courseViewModel.get_job_list().addOnSuccessListener(){
+            taskResult->
+            if (taskResult != null)
+            {
+                if (taskResult.size()>0)
+                {
+                    for (document in taskResult)
+                    {
+                        listjob.add(document.toObject(jobModal::class.java))
+                        listjob.sortBy { it.title }
+                    }
+                }
+                binding.rvJob.layoutManager = LinearLayoutManager(mContext)
+                binding.rvJob.adapter = JobAdapter(mContext, listjob.take(2), this@HomeFragments)
+                binding.viewall.setOnClickListener()
+                {
+                    var showText = binding.viewall.text
+                    if (showText == getText)
+                    {
+                        binding.rvJob.adapter = JobAdapter(mContext, listjob, this@HomeFragments)
+                        binding.viewall.setText("Merge All")
+                    }
+                    else{
+                        binding.rvJob.adapter = JobAdapter(mContext, listjob.take(2), this@HomeFragments)
+                        binding.viewall.setText(getText)
+                    }
+
+                }
+
+
+            }
+        }
+
+    }
     private fun setAdapter() {
         val list = ArrayList<CourseModal>()
        courseViewModel.getCourseList().addOnSuccessListener { taskResult->
@@ -516,5 +569,17 @@ var dcancel = dialog.findViewById<Button>(R.id.cancel)
             .addOnFailureListener {
                 callback(null)
             }
+    }
+
+    override fun onItemClick(jobModal: JobModal) {
+
+    }
+
+    override fun onDeleteClick(jobModal: JobModal) {
+
+    }
+
+    override fun onEditClick(jobModal: JobModal) {
+
     }
 }

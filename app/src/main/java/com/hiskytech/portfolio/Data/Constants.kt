@@ -4,7 +4,7 @@ class Constants {
     public var Course_Collection="Courses"
     public var USER_COLLECTION="Users"
     public var ANNOUCEMENT_COLLECTION="Annoucement"
-    public var GROUP_COLLECTION="Groups"
+    public var JOB_COLLECTION="JOBS"
     public var DRAMA_COLLECTION="Drama"
     public var SEASON_COLLECTION="Season"
     public var VIDEOMANAGEMENT_COLLECTION="ManageVideo"

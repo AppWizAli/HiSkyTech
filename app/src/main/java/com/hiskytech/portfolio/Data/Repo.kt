@@ -144,40 +144,40 @@ class Repo(var context: CourseViewModal) {
 return jobCollection.get()
     }
 
-    /*
-    
-        suspend fun addVideo(modelVideo: ModelVideo): LiveData<Boolean> {
-            val result = MutableLiveData<Boolean>()
-            VideoCollection.add(modelVideo)
-                .addOnSuccessListener { documentReference ->
-                    // Store the generated document ID in the ModelDrama
-                    modelVideo.docId = documentReference.id
-    
-                    // Update the document with the stored ID
-                    VideoCollection.document(documentReference.id).set(modelVideo)
-                        .addOnSuccessListener {
-                            result.value = true
-                        }
-                        .addOnFailureListener {
-                            result.value = false
-                        }
-                }
-                .addOnFailureListener {
-                    result.value = false
-                }
-    
-            return result
-        }
-    */
+    fun updatejob(jobModal: JobModal): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        jobCollection.document(jobModal.docID).set(jobModal)
+            .addOnSuccessListener {
+                result.value = true
+                // Update successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value = false
 
-/*
-    suspend fun getAssignedVideo(userIds:String): Task<QuerySnapshot> {
-        return VideoCollection
-            .whereEqualTo(constants.PRIVACY, constants.VIDEO_PRIVACY_PRIVATE)
-            .whereEqualTo("users_Id", userIds)
-            .get()
-    }*/
-
-
+                // Handle failure scenarios if needed
+            }
+        return result
 
     }
+
+    fun deleteJob(jobModal: JobModal): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        jobCollection.document(jobModal.docID).delete()
+            .addOnSuccessListener {
+                result.value = true
+                // Deletion successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value = false
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
+
+    fun get_Annoucement_list(): Task<QuerySnapshot> {
+
+        return annoucementCollection.get()
+    }
+
+
+}

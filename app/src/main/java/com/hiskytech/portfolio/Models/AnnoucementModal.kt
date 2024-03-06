@@ -1,6 +1,7 @@
 package com.hiskytech.portfolio.Models
 
 import android.app.appsearch.util.DocumentIdUtil
+import com.google.firebase.Timestamp
 import com.google.gson.Gson
 
 data class AnnoucementModal(
@@ -8,7 +9,8 @@ data class AnnoucementModal(
     var thumnailSecond: String ="",
     var title:String = "",
     var description:String ="",
-    var docID:String=""
+    var docID:String="",
+    val createdAt: Timestamp = Timestamp.now() // Creation timestamp
 ){
     override fun toString(): String {
         val gson = Gson()

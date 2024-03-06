@@ -43,4 +43,19 @@ class CourseViewModal: ViewModel() {
     {
         return repo.get_job_list()
     }
+
+    fun updatejob(jobModal: JobModal):LiveData<Boolean>{
+        return repo.updatejob(jobModal)
+
+    }
+
+    fun deleteJob(jobModal: JobModal): LiveData<Boolean>
+    {
+        return  repo.deleteJob(jobModal)
+    }
+
+    fun get_Annoucement_list():Task<QuerySnapshot>{
+
+        return repo.get_Annoucement_list()
+    }
 }

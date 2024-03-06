@@ -35,22 +35,22 @@ import com.hiskytech.portfolio.R
 import com.hiskytech.portfolio.ViewModels.CourseViewModal
 import com.hiskytech.portfolio.databinding.FragmentHomeFragmentsBinding
 
-class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapter.OnItemClickListener{
+class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapter.OnItemClickListener {
     private lateinit var binding: FragmentHomeFragmentsBinding
     private lateinit var dialogDetail: Dialog
     private lateinit var dialog: Dialog
     private val db = Firebase.firestore
-   private lateinit var  courseViewModel: CourseViewModal
+    private lateinit var courseViewModel: CourseViewModal
     private val IMAGE_PICKER_REQUEST_CODE = 123
     private lateinit var contants: Constants
     private lateinit var mContext: Context
     private var imageURI: Uri? = null
-    private  var imageUriSecond: Uri? = null
+    private var imageUriSecond: Uri? = null
     private lateinit var jobModal: JobModal
     private lateinit var annoucementModal: AnnoucementModal
-    private  var getText:String = "view all"
-    private var imagecode:Int = 100
-    private lateinit var courseModal :CourseModal
+    private var getText: String = "view all"
+    private var imagecode: Int = 100
+    private lateinit var courseModal: CourseModal
     private var private = 110
     private var deleteDialog: AlertDialog? = null
     private lateinit var thumnailview: ImageView
@@ -129,9 +129,10 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
 
             next.setOnClickListener()
             {
-               annoucementModal.title = annoucement_title.text.toString()
+                annoucementModal.title = annoucement_title.text.toString()
                 annoucementModal.description = annoucement_des.text.toString()
-                if (annoucement_title.text.toString().isEmpty() || annoucement_des.text.toString().isEmpty()
+                if (annoucement_title.text.toString().isEmpty() || annoucement_des.text.toString()
+                        .isEmpty()
                 ) {
                     Toast.makeText(mContext, "Please Enter All fields", Toast.LENGTH_SHORT).show()
                 } else {
@@ -179,7 +180,7 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
                     handleUploadButtonClick()
                 }
             }
-        dialog.show()
+            dialog.show()
         }
         add_completed_projects.setOnClickListener()
         {
@@ -210,7 +211,7 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
             var location = dialog.findViewById<EditText>(R.id.location)
             var dcancel = dialog.findViewById<Button>(R.id.cancel)
             var add = dialog.findViewById<Button>(R.id.add)
-            dcancel.setOnClickListener(){ dialog.dismiss() }
+            dcancel.setOnClickListener() { dialog.dismiss() }
             add.setOnClickListener()
             {
                 jobModal.title = job_title.text.toString()
@@ -219,11 +220,12 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
                 jobModal.companyName = company.text.toString()
                 jobModal.location = location.text.toString()
 
-                if (job_title.text.toString().isEmpty() || description.text.toString().isEmpty() || salary.text.toString().isEmpty()|| company.text.toString().isEmpty() || location.text.toString().isEmpty()
+                if (job_title.text.toString().isEmpty() || description.text.toString()
+                        .isEmpty() || salary.text.toString().isEmpty() || company.text.toString()
+                        .isEmpty() || location.text.toString().isEmpty()
                 ) {
                     Toast.makeText(mContext, "Please Enter All fields", Toast.LENGTH_SHORT).show()
-                }
-                else {
+                } else {
 
                     courseViewModel.add_Job(jobModal).observe(requireActivity()) { success ->
                         if (success) {
@@ -245,18 +247,13 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
     }
 
 
-        private fun setAdapterJobs()
-    {
+    private fun setAdapterJobs() {
         val listjob = ArrayList<JobModal>()
 
-        courseViewModel.get_job_list().addOnSuccessListener(){
-            taskResult->
-            if (taskResult != null)
-            {
-                if (taskResult.size()>0)
-                {
-                    for (document in taskResult)
-                    {
+        courseViewModel.get_job_list().addOnSuccessListener() { taskResult ->
+            if (taskResult != null) {
+                if (taskResult.size() > 0) {
+                    for (document in taskResult) {
                         listjob.add(document.toObject(jobModal::class.java))
                         listjob.sortBy { it.title }
                     }
@@ -266,13 +263,12 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
                 binding.viewall.setOnClickListener()
                 {
                     var showText = binding.viewall.text
-                    if (showText == getText)
-                    {
+                    if (showText == getText) {
                         binding.rvJob.adapter = JobAdapter(mContext, listjob, this@HomeFragments)
                         binding.viewall.setText("Merge All")
-                    }
-                    else{
-                        binding.rvJob.adapter = JobAdapter(mContext, listjob.take(2), this@HomeFragments)
+                    } else {
+                        binding.rvJob.adapter =
+                            JobAdapter(mContext, listjob.take(2), this@HomeFragments)
                         binding.viewall.setText(getText)
                     }
 
@@ -283,9 +279,10 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
         }
 
     }
+
     private fun setAdapter() {
         val list = ArrayList<CourseModal>()
-       courseViewModel.getCourseList().addOnSuccessListener { taskResult->
+        courseViewModel.getCourseList().addOnSuccessListener { taskResult ->
 
             if (taskResult != null) {
                 if (taskResult.size() > 0) {
@@ -295,18 +292,19 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
                     }
                 }
 
-                    binding.recyclerView.layoutManager = LinearLayoutManager(mContext)
-                    binding.recyclerView.adapter = CoursesAdapter(mContext, list.take(2), this@HomeFragments)
+                binding.recyclerView.layoutManager = LinearLayoutManager(mContext)
+                binding.recyclerView.adapter =
+                    CoursesAdapter(mContext, list.take(2), this@HomeFragments)
                 binding.viewAll.setOnClickListener()
                 {
-                   var showText = binding.viewAll.text
-                    if (showText == getText)
-                    {
-                        binding.recyclerView.adapter = CoursesAdapter(mContext, list, this@HomeFragments)
+                    var showText = binding.viewAll.text
+                    if (showText == getText) {
+                        binding.recyclerView.adapter =
+                            CoursesAdapter(mContext, list, this@HomeFragments)
                         binding.viewAll.setText("Merge All")
-                    }
-                    else{
-                        binding.recyclerView.adapter = CoursesAdapter(mContext, list.take(2), this@HomeFragments)
+                    } else {
+                        binding.recyclerView.adapter =
+                            CoursesAdapter(mContext, list.take(2), this@HomeFragments)
                         binding.viewAll.setText(getText)
                     }
 
@@ -319,33 +317,29 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
             }
         }
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == IMAGE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            if (imagecode == 120)
-            {
-                imageUriSecond =  data?.data
-            }
-            else
-            {
+            if (imagecode == 120) {
+                imageUriSecond = data?.data
+            } else {
                 imageURI = data?.data
             }
 
 
-
         }
     }
-    private fun annoucementAdd()
-    {
+
+    private fun annoucementAdd() {
         if (imageURI != null) {
             if (imageUriSecond != null) {
                 uploadThumbnailImage(imageURI!!) { thumbnailUrl ->
                     if (thumbnailUrl != null) {
                         annoucementModal.thumnail = thumbnailUrl
 
-                        uploadThumbnailImage(imageUriSecond!!){
-                            if (thumbnailUrl != null)
-                            {
+                        uploadThumbnailImage(imageUriSecond!!) {
+                            if (thumbnailUrl != null) {
                                 annoucementModal.thumnailSecond = thumbnailUrl
                                 courseViewModel.addAnnoucement(annoucementModal)
                                     .observe(requireActivity()) { success ->
@@ -377,16 +371,19 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
                         ).show()
                     }
                 }
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "image uri display is not selected",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-            else{
-                Toast.makeText(requireContext(), "image uri display is not selected", Toast.LENGTH_SHORT).show()
-            }
-        }
-        else{
+        } else {
             Toast.makeText(requireContext(), "image uri is not selected", Toast.LENGTH_SHORT).show()
         }
 
     }
+
     private fun handleUploadButtonClick() {
         if (imageURI != null) {
             uploadThumbnailImage(imageURI!!) { thumbnailUrl ->
@@ -419,8 +416,7 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
                     ).show()
                 }
             }
-        }
-        else{
+        } else {
             Toast.makeText(requireContext(), "image uri is not selected", Toast.LENGTH_SHORT).show()
         }
     }
@@ -440,12 +436,11 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
             .setPositiveButton("Yes") { _, _ ->
                 performDeleteAction(coursemodal)
             }
-            .setNegativeButton("No") { dialog, _ ->
+            .setNegativeButton("No") { _, _ ->
                 dialog.dismiss()
             }
-        deleteDialog = builder.create()
-        deleteDialog?.show()
     }
+
     private fun performDeleteAction(coursemodal: CourseModal) {
         courseViewModel.deleteDrama(coursemodal)
             .observe(this@HomeFragments) { success ->
@@ -473,6 +468,7 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
         showEditDialog(courseModal)
         Toast.makeText(requireContext(), "clicked", Toast.LENGTH_SHORT).show()
     }
+
     @SuppressLint("SuspiciousIndentation")
     private fun showEditDialog(courseModal: CourseModal) {
 
@@ -495,9 +491,9 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
         cancl.setOnClickListener { dialog.dismiss() }
 
         course_image.setOnClickListener {
-             val pickImage =
-                 Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-             startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
+            val pickImage =
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
         }
 
         add.setOnClickListener {
@@ -517,26 +513,26 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
                     uploadThumbnailImage(imageURI!!) { thumbnailUrl ->
                         if (thumbnailUrl != null) {
                             courseModal.thumbnail = thumbnailUrl
-                                courseViewModel.updateCourse(courseModal)
-                                    .observe(requireActivity()) { success ->
-                                        if (success) {
-                                            Toast.makeText(
-                                                mContext,
-                                                "Course updated successfully",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                            setAdapter()
-                                            dialog.dismiss()
+                            courseViewModel.updateCourse(courseModal)
+                                .observe(requireActivity()) { success ->
+                                    if (success) {
+                                        Toast.makeText(
+                                            mContext,
+                                            "Course updated successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        setAdapter()
+                                        dialog.dismiss()
 
-                                        } else {
-                                            utils.endLoadingAnimation()
-                                            Toast.makeText(
-                                                mContext,
-                                                "Failed to update the Course",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
+                                    } else {
+                                        utils.endLoadingAnimation()
+                                        Toast.makeText(
+                                            mContext,
+                                            "Failed to update the Course",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
+                                }
                         } else {
                             Toast.makeText(
                                 mContext,
@@ -545,16 +541,21 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
                             ).show()
                         }
                     }
-                }
-                else{
-                    Toast.makeText(requireContext(), "image uri is not selected", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "image uri is not selected",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
         dialog.show()
     }
+
     private fun uploadThumbnailImage(imageUri: Uri, callback: (String?) -> Unit) {
-        val storageRef = Firebase.storage.reference.child("thumbnails/${System.currentTimeMillis()}_${imageUri.lastPathSegment}")
+        val storageRef =
+            Firebase.storage.reference.child("thumbnails/${System.currentTimeMillis()}_${imageUri.lastPathSegment}")
         storageRef.putFile(imageUri)
             .addOnSuccessListener { taskSnapshot ->
                 taskSnapshot.storage.downloadUrl.addOnCompleteListener { downloadUrlTask ->
@@ -576,10 +577,26 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
     }
 
     override fun onDeleteClick(jobModal: JobModal) {
-
+        val builder = AlertDialog.Builder(mContext)
+        builder.setTitle("Confirmation")
+            .setMessage("Are you sure you want to delete?")
+            .setPositiveButton("Yes") { _, _ ->
+                DeleteAction(jobModal)
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+        deleteDialog = builder.create()
+        deleteDialog?.show()
     }
 
+    private fun DeleteAction(jobModal: JobModal) {
+    }
+
+
     override fun onEditClick(jobModal: JobModal) {
+
+
 
     }
 }

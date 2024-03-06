@@ -43,4 +43,7 @@ class CourseViewModal: ViewModel() {
     {
         return repo.get_job_list()
     }
+    fun Edit_job(jobModal: JobModal):LiveData<Boolean>{
+        return repo.Edit_job(jobModal)
+    }
 }

@@ -143,6 +143,21 @@ class Repo(var context: CourseViewModal) {
     fun get_job_list(): Task<QuerySnapshot> {
 return jobCollection.get()
     }
+    fun Edit_job(jobModal: JobModal):LiveData<Boolean>{
+        val result = MutableLiveData<Boolean>()
+       jobCollection.document(jobModal.docID).set(jobModal)
+            .addOnSuccessListener {
+                result.value = true
+                // Update successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value = false
+
+                // Handle failure scenarios if needed
+            }
+        return result
+
+    }
 
     /*
     

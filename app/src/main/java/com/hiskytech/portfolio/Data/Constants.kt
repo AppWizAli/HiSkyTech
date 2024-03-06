@@ -2,9 +2,10 @@ package com.hiskytech.portfolio.Data
 
 class Constants {
     public var Course_Collection="Courses"
-    public var USER_COLLECTION="Users"
+    public var USER_COLLECTION="USERS"
     public var ANNOUCEMENT_COLLECTION="Annoucement"
     public var JOB_COLLECTION="JOBS"
+    public var JOB_DELETION="JOBS_DELETE"
     public var DRAMA_COLLECTION="Drama"
     public var SEASON_COLLECTION="Season"
     public var VIDEOMANAGEMENT_COLLECTION="ManageVideo"

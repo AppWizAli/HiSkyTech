@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:background="@drawable/flag_transparent"
+    android:background="#4C4A4A"
     android:id="@+id/containerDrama"
     android:layout_marginBottom="10dp"
     android:layout_marginHorizontal="10dp"

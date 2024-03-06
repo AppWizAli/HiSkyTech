@@ -1,15 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="#784343"
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
         android:text="Add Completed Projects"
         android:textSize="22sp"
+        android:gravity="center"
+        android:background="#131313"
+        android:textColor="@color/white"
         android:textStyle="bold"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="29dp"
         />
+     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Project Title "
+        android:textSize="18sp"
+         android:id="@+id/txt"
+         android:layout_marginStart="10dp"
+        android:textStyle="bold"
+         android:layout_marginTop="80dp"
+        />
+   <EditText
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_below="@id/txt"
+       android:id="@+id/text"
+
+       />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Project Discription "
+        android:textSize="18sp"
+        android:id="@+id/txt1"
+        android:layout_marginStart="10dp"
+        android:textStyle="bold"
+        android:layout_below="@id/text"
+        android:layout_marginTop="10dp"
+
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txt1"
+        android:id="@+id/text1"
+        android:layout_marginTop="10dp"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Project Duration "
+        android:textSize="18sp"
+        android:id="@+id/txtdis"
+        android:layout_marginStart="10dp"
+        android:textStyle="bold"
+        android:layout_below="@id/text1"
+        android:layout_marginTop="10dp"
+
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtdis"
+        android:id="@+id/textdu"
+        android:layout_marginTop="10dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Client Feedback "
+        android:textSize="18sp"
+        android:id="@+id/textfed"
+        android:layout_marginStart="10dp"
+        android:textStyle="bold"
+        android:layout_below="@id/textdu"
+        android:layout_marginTop="10dp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textfed"
+        android:inputType="textMultiLine"
+        android:id="@+id/textfeed"
+        android:layout_marginTop="10dp"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Achievements "
+        android:textSize="18sp"
+        android:id="@+id/textachvments"
+        android:layout_marginStart="10dp"
+        android:textStyle="bold"
+        android:layout_below="@id/textfeed"
+        android:layout_marginTop="10dp"/>
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textachvments"
+        android:id="@+id/textachv"
+        android:inputType="textMultiLine"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnsub"
+        android:text="Submit"
+        android:layout_below="@+id/textachv"
+        android:layout_marginHorizontal="150dp"
+        android:layout_marginTop="20dp"
+
+        />
+
 </RelativeLayout>

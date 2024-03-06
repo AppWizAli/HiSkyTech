@@ -2,6 +2,7 @@ package com.hiskytech.portfolio.Data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -10,9 +11,11 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.hiskytech.portfolio.Models.AnnoucementModal
 import com.hiskytech.portfolio.Models.CourseModal
 import com.hiskytech.portfolio.Models.JobModal
-import com.hiskytech.portfolio.ViewModels.CourseViewModal
+import com.hiskytech.portfolio.Models.Usermodel
+import com.hiskytech.portfolio.ViewModels.UserViewModal
+import dagger.hilt.android.internal.Contexts
 
-class Repo(var context: CourseViewModal) {
+class Repo(var context: ViewModel) {
 
 
     private var constants = Constants()
@@ -26,6 +29,7 @@ class Repo(var context: CourseViewModal) {
     private var UserCollection = db.collection(constants.USER_COLLECTION)
     private var annoucementCollection = db.collection(constants.ANNOUCEMENT_COLLECTION)
     private var jobCollection  = db.collection(constants.JOB_COLLECTION)
+
     private var AdminCollection = db.collection(constants.ADMIN_COLLECTION)
     private var DramaCollection = db.collection(constants.DRAMA_COLLECTION)
     private var SeasonCollection = db.collection(constants.SEASON_COLLECTION)
@@ -159,6 +163,50 @@ return jobCollection.get()
 
     }
 
+    fun deletejob(jobModal: JobModal): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        courseCollection.document(jobModal.docID).delete()
+            .addOnSuccessListener {
+                result.value = true
+                // Deletion successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value = false
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
+
+    fun adduser(usermodel: Usermodel): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+
+        UserCollection.add(usermodel).addOnSuccessListener()
+        {document->
+            usermodel.userId = document.id
+
+            UserCollection.document(document.id).set(usermodel)
+                .addOnSuccessListener()
+                {
+                    result.value = true
+                }.addOnFailureListener()
+                {e->
+                    result.value = false
+                }
+
+        }.addOnFailureListener()
+        {
+            result.value = false
+        }
+        return result
+    }
+
+    fun get_data(): Task<QuerySnapshot> {
+        return UserCollection.get()
+    }
+
+}
+
+
     /*
     
         suspend fun addVideo(modelVideo: ModelVideo): LiveData<Boolean> {
@@ -195,4 +243,3 @@ return jobCollection.get()
 
 
 
-    }

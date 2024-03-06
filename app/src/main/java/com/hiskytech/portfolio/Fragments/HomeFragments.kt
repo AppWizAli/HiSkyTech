@@ -33,14 +33,16 @@ import com.hiskytech.portfolio.Models.CourseModal
 import com.hiskytech.portfolio.Models.JobModal
 import com.hiskytech.portfolio.R
 import com.hiskytech.portfolio.ViewModels.CourseViewModal
+import com.hiskytech.portfolio.ViewModels.JobViewModal
 import com.hiskytech.portfolio.databinding.FragmentHomeFragmentsBinding
 
-class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapter.OnItemClickListener {
+class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapter.OnItemClickListener{
     private lateinit var binding: FragmentHomeFragmentsBinding
     private lateinit var dialogDetail: Dialog
     private lateinit var dialog: Dialog
     private val db = Firebase.firestore
-    private lateinit var courseViewModel: CourseViewModal
+   private lateinit var  courseViewModel: CourseViewModal
+   private lateinit var jobViewModal: JobViewModal
     private val IMAGE_PICKER_REQUEST_CODE = 123
     private lateinit var contants: Constants
     private lateinit var mContext: Context

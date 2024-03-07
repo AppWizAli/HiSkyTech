@@ -1,12 +1,10 @@
 package com.hiskytech.portfolio.ViewModels
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.QuerySnapshot
 import com.hiskytech.portfolio.Data.Repo
-import com.hiskytech.portfolio.Models.CourseModal
 import com.hiskytech.portfolio.Models.Usermodel
 
 class UserViewModal : ViewModel() {
@@ -17,9 +15,9 @@ class UserViewModal : ViewModel() {
        return repo.adduser(usermodel)
    }
 
-    fun get_data(): Task<QuerySnapshot>
-    {
+    fun get_data(): Task<QuerySnapshot>{
         return repo.get_data()
+
     }
 
 

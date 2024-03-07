@@ -6,37 +6,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import com.hiskytech.portfolio.Adapters.AdapterAdmin
-import com.hiskytech.portfolio.Models.ModelUser
-import com.hiskytech.portfolio.Models.Usermodel
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.hiskytech.portfolio.R
 import com.hiskytech.portfolio.ViewModels.UserViewModal
 import com.hiskytech.portfolio.databinding.FragmentUserFragmentsBinding
 
 
-class UserFragments : Fragment() ,AdapterAdmin.OnItemClickListener{
+class UserFragments : Fragment(){
     private lateinit var binding: FragmentUserFragmentsBinding
-    private  val userViewModal: UserViewModal by viewModels()
+    private lateinit var bottomNavigationView:BottomNavigationView
+    private lateinit var navController: NavController
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentUserFragmentsBinding.inflate(inflater,container,false)
+        binding = FragmentUserFragmentsBinding.inflate(inflater, container, false)
+
+        bottomNavigationView = binding.navView
+        val navHostFragment = childFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
+        navController = navHostFragment.navController
+
+// Connect BottomNavigationView with NavController
+        bottomNavigationView.setupWithNavController(navController)
+
 
         return binding.root
-    }
-
-
-
-
-    override fun onUpdateButton(usermodel: Usermodel) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onRemoveButton(usermodel: Usermodel) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onViewButton(usermodel: Usermodel) {
-        TODO("Not yet implemented")
     }
 }

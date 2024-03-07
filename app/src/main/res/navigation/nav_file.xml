@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_file"
-    app:startDestination="@id/userfrag">
+    app:startDestination="@id/user">
 
     <fragment
-        android:id="@+id/userfrag"
+        android:id="@+id/user"
         android:name="com.hiskytech.portfolio.Fragments.User1Fragment"
         android:label="fragment_user1"
         tools:layout="@layout/fragment_user1" />
     <fragment
-        android:id="@+id/adminFrag"
+        android:id="@+id/admin"
         android:name="com.hiskytech.portfolio.Fragments.AdminFragment"
         android:label="fragment_admin"
         tools:layout="@layout/fragment_admin" />

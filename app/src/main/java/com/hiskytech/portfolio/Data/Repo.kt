@@ -2,6 +2,7 @@ package com.hiskytech.portfolio.Data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -10,9 +11,10 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.hiskytech.portfolio.Models.AnnoucementModal
 import com.hiskytech.portfolio.Models.CourseModal
 import com.hiskytech.portfolio.Models.JobModal
+import com.hiskytech.portfolio.Models.Usermodel
 import com.hiskytech.portfolio.ViewModels.CourseViewModal
 
-class Repo(var context: CourseViewModal) {
+class Repo(var context: ViewModel) {
 
 
     private var constants = Constants()
@@ -177,6 +179,34 @@ return jobCollection.get()
     fun get_Annoucement_list(): Task<QuerySnapshot> {
 
         return annoucementCollection.get()
+    }
+
+    fun adduser(usermodel: Usermodel): LiveData<Boolean> {
+
+        var result = MutableLiveData<Boolean>()
+        UserCollection.add(usermodel).addOnSuccessListener()
+        {document->
+            usermodel.userId = document.id
+
+            db.collection(annoucementCollection.toString()).document(document.id).set(usermodel)
+                .addOnSuccessListener()
+                {
+                    result.value = true
+                }.addOnFailureListener()
+                {e->
+                    result.value = false
+                }
+
+        }.addOnFailureListener()
+        {
+            result.value = false
+        }
+        return result
+
+    }
+
+    fun get_data(): Task<QuerySnapshot> {
+            return UserCollection.get()
     }
 
 

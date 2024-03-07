@@ -193,6 +193,7 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
             dialog = Dialog(requireContext(), R.style.FullWidthDialog)
             dialog.setContentView(R.layout.dialogue_add_completed_projects)
             dialog.setCancelable(false)
+
             dialog.show()
         }
         add_team_member.setOnClickListener()
@@ -295,18 +296,18 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
                         listAnnoucement.sortBy { it.title }
                     }
                 }
-                binding.recyclerViewAnnoucements.layoutManager = LinearLayoutManager(mContext)
-                binding.recyclerViewAnnoucements.adapter = AnnoucementAdapter(mContext, listAnnoucement.take(1), this@HomeFragments)
-                binding.viewAllAnnoucements.setOnClickListener()
+                binding.recyclerViewAnnouncements.layoutManager = LinearLayoutManager(mContext)
+                binding.recyclerViewAnnouncements.adapter = AnnoucementAdapter(mContext, listAnnoucement.take(1), this@HomeFragments)
+                binding.viewAllAnnouncements.setOnClickListener()
                 {
-                    var showText = binding.viewAllAnnoucements.text
+                    var showText = binding.viewAllAnnouncements.text
                     if (showText == getText) {
-                        binding.recyclerViewAnnoucements.adapter = AnnoucementAdapter(mContext, listAnnoucement, this@HomeFragments)
-                        binding.viewAllAnnoucements.setText("Merge All")
+                        binding.recyclerViewAnnouncements.adapter = AnnoucementAdapter(mContext, listAnnoucement, this@HomeFragments)
+                        binding.viewAllAnnouncements.setText("Merge All")
                     } else {
-                        binding.recyclerViewAnnoucements.adapter =
+                        binding.recyclerViewAnnouncements.adapter =
                             AnnoucementAdapter(mContext, listAnnoucement.take(1), this@HomeFragments)
-                        binding.viewAllAnnoucements.setText(getText)
+                        binding.viewAllAnnouncements.setText(getText)
                     }
 
                 }

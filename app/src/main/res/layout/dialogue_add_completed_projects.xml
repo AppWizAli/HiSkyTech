@@ -13,6 +13,7 @@
         android:background="#131313"
         android:textColor="@color/white"
         android:textStyle="bold"
+        android:id="@+id/Add_completed_project"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="29dp"
         />
@@ -22,15 +23,17 @@
         android:text="Project Title "
         android:textSize="18sp"
          android:id="@+id/txt"
+         android:layout_below="@+id/Add_completed_project"
+         android:layout_marginTop="5dp"
          android:layout_marginStart="10dp"
         android:textStyle="bold"
-         android:layout_marginTop="80dp"
         />
    <EditText
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:layout_below="@id/txt"
-       android:id="@+id/text"
+       android:layout_marginHorizontal="10dp"
+       android:id="@+id/project_title_editText"
 
        />
     <TextView
@@ -41,7 +44,7 @@
         android:id="@+id/txt1"
         android:layout_marginStart="10dp"
         android:textStyle="bold"
-        android:layout_below="@id/text"
+        android:layout_below="@id/project_title_editText"
         android:layout_marginTop="10dp"
 
         />
@@ -49,7 +52,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/txt1"
-        android:id="@+id/text1"
+        android:layout_marginHorizontal="10dp"
+        android:id="@+id/project_description_editText"
         android:layout_marginTop="10dp"
         />
 
@@ -62,7 +66,7 @@
         android:id="@+id/txtdis"
         android:layout_marginStart="10dp"
         android:textStyle="bold"
-        android:layout_below="@id/text1"
+        android:layout_below="@id/project_description_editText"
         android:layout_marginTop="10dp"
 
         />
@@ -70,7 +74,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/txtdis"
-        android:id="@+id/textdu"
+        android:id="@+id/project_duration_editText"
+        android:layout_marginHorizontal="10dp"
         android:layout_marginTop="10dp"
         />
 
@@ -82,7 +87,7 @@
         android:id="@+id/textfed"
         android:layout_marginStart="10dp"
         android:textStyle="bold"
-        android:layout_below="@id/textdu"
+        android:layout_below="@id/project_duration_editText"
         android:layout_marginTop="10dp"/>
 
     <EditText
@@ -90,7 +95,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/textfed"
         android:inputType="textMultiLine"
-        android:id="@+id/textfeed"
+        android:id="@+id/client_feedback_editText"
+        android:layout_marginHorizontal="10dp"
         android:layout_marginTop="10dp"/>
 
 
@@ -102,7 +108,7 @@
         android:id="@+id/textachvments"
         android:layout_marginStart="10dp"
         android:textStyle="bold"
-        android:layout_below="@id/textfeed"
+        android:layout_below="@id/client_feedback_editText"
         android:layout_marginTop="10dp"/>
 
 
@@ -110,19 +116,44 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/textachvments"
-        android:id="@+id/textachv"
+        android:id="@+id/achevement"
+        android:layout_marginHorizontal="10dp"
         android:inputType="textMultiLine"
         android:layout_marginTop="10dp"/>
+ <TextView
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+  android:text="SelectImage"
+  android:background="@color/PrimaryVariant"
+  android:padding="5dp"
+     android:layout_below="@+id/achevement"
+     android:layout_marginTop="10dp"
+     android:layout_marginStart="10dp"
+     android:id="@+id/project_image"
+  />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnsub"
+        android:id="@+id/add"
         android:text="Submit"
-        android:layout_below="@+id/textachv"
-        android:layout_marginHorizontal="150dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
 
         />
+ <Button
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:id="@+id/back"
+     android:text="Cancel"
+     android:layout_marginStart="30dp"
+     android:layout_marginBottom="10dp"
+     android:layout_alignParentBottom="true"
+     android:layout_marginTop="20dp"
+
+     />
 
 </RelativeLayout>

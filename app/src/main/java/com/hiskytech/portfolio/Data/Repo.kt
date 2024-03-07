@@ -9,8 +9,10 @@ import com.google.firebase.storage.ktx.storage
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.QuerySnapshot
 import com.hiskytech.portfolio.Models.AnnoucementModal
+import com.hiskytech.portfolio.Models.CompletedprojectModal
 import com.hiskytech.portfolio.Models.CourseModal
 import com.hiskytech.portfolio.Models.JobModal
+import com.hiskytech.portfolio.Models.TeamModal
 import com.hiskytech.portfolio.Models.Usermodel
 import com.hiskytech.portfolio.ViewModels.CourseViewModal
 
@@ -22,25 +24,17 @@ class Repo(var context: ViewModel) {
 
     ///////////////////////////   FIREBASE    //////////////////////////////////
     private val db = Firebase.firestore
-    private val firebaseStorage = Firebase.storage
-    private val storageRef = firebaseStorage.reference
     private var courseCollection= db.collection(constants.Course_Collection)
     private var UserCollection = db.collection(constants.USER_COLLECTION)
     private var annoucementCollection = db.collection(constants.ANNOUCEMENT_COLLECTION)
     private var jobCollection  = db.collection(constants.JOB_COLLECTION)
-    private var AdminCollection = db.collection(constants.ADMIN_COLLECTION)
-    private var DramaCollection = db.collection(constants.DRAMA_COLLECTION)
-    private var SeasonCollection = db.collection(constants.SEASON_COLLECTION)
-    private var VideoManagementCollection = db.collection(constants.VIDEOMANAGEMENT_COLLECTION)
+    private var CompletedProjectCollection = db.collection(constants.COMPLETEDPROJECTS)
+    private var TeamCollection  = db.collection(constants.TEAMCOLLECTION)
 
 
+    ///////////////////////////  FUNCTIONS   //////////////////////////////////
 
 
-
-    fun getUserList():Task<QuerySnapshot>
-    {
-        return UserCollection.get()
-    }
     fun add_course(course_modal:CourseModal):LiveData<Boolean>
     {
         var result = MutableLiveData<Boolean>()
@@ -182,13 +176,112 @@ return jobCollection.get()
     }
 
     fun adduser(usermodel: Usermodel): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+
+        // First, check if the email already exists
+        db.collection("UserCollection")
+            .whereEqualTo("email", usermodel.email)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (querySnapshot.isEmpty) {
+                    // Email doesn't exist, proceed with adding the user
+                    UserCollection.add(usermodel)
+                        .addOnSuccessListener { documentReference ->
+                            usermodel.userId = documentReference.id
+                            // Update the document with the usermodel
+                            UserCollection.document(documentReference.id)
+                                .set(usermodel)
+                                .addOnSuccessListener {
+                                    result.value = true
+                                }
+                                .addOnFailureListener { e ->
+                                    result.value = false
+                                }
+                        }
+                        .addOnFailureListener {
+                            result.value = false
+                        }
+                } else {
+                    // Email already exists
+                    result.value = false
+                }
+            }
+            .addOnFailureListener {
+                result.value = false
+            }
+
+        return result
+    }
+
+
+    fun get_data(): Task<QuerySnapshot> {
+            return UserCollection.get()
+    }
+
+    fun add_completed_course(completedprojectModal: CompletedprojectModal): LiveData<Boolean> {
 
         var result = MutableLiveData<Boolean>()
-        UserCollection.add(usermodel).addOnSuccessListener()
-        {document->
-            usermodel.userId = document.id
 
-            db.collection(annoucementCollection.toString()).document(document.id).set(usermodel)
+        CompletedProjectCollection.add(completedprojectModal).addOnSuccessListener()
+        {document->
+            completedprojectModal.docId = document.id
+
+            CompletedProjectCollection.document(document.id).set(completedprojectModal)
+                .addOnSuccessListener()
+                {
+                    result.value = true
+                }.addOnFailureListener()
+                {e->
+                    result.value = false
+                }
+
+        }.addOnFailureListener()
+        {
+            result.value = false
+        }
+        return result
+    }
+    fun get_complted_project_list(): Task<QuerySnapshot> {
+        return CompletedProjectCollection.get()
+
+    }
+    fun deleteproject(completedprojectModal: CompletedprojectModal): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        CompletedProjectCollection.document(completedprojectModal.docId).delete()
+            .addOnSuccessListener {
+                result.value = true
+
+            }
+            .addOnFailureListener {
+                result.value = false
+            }
+        return result
+    }
+
+    fun edit_completed_project(completedprojectModal: CompletedprojectModal): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        jobCollection.document(completedprojectModal.docId).set(completedprojectModal)
+            .addOnSuccessListener {
+                result.value = true
+                // Update successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value = false
+
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
+    fun add_team_member(teamModal: TeamModal):LiveData<Boolean>
+    {
+
+        var result = MutableLiveData<Boolean>()
+
+        TeamCollection.add(teamModal).addOnSuccessListener()
+        {document->
+            teamModal.userId = document.id
+
+                    TeamCollection.document(document.id).set(teamModal)
                 .addOnSuccessListener()
                 {
                     result.value = true
@@ -204,9 +297,63 @@ return jobCollection.get()
         return result
 
     }
+    fun deleteTeamMember(teamModal: TeamModal): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        TeamCollection.document(teamModal.userId).delete()
+            .addOnSuccessListener {
+                result.value = true
 
-    fun get_data(): Task<QuerySnapshot> {
-            return UserCollection.get()
+            }
+            .addOnFailureListener {
+                result.value = false
+            }
+        return result
+    }
+    fun get_team_memeber_list():Task<QuerySnapshot>
+    {
+        return TeamCollection.get()
+    }
+    fun edit_Team_member(teamModal: TeamModal): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        TeamCollection.document(teamModal.userId).set(teamModal)
+            .addOnSuccessListener {
+                result.value = true
+                // Update successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value = false
+
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
+
+    fun delte_user(usermodel: Usermodel): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        UserCollection.document(usermodel.userId).delete()
+            .addOnSuccessListener {
+                result.value = true
+
+            }
+            .addOnFailureListener {
+                result.value = false
+            }
+        return result
+    }
+    fun edit_user(usermodel: Usermodel):LiveData<Boolean>
+    {
+        val result = MutableLiveData<Boolean>()
+        UserCollection.document(usermodel.userId).set(usermodel)
+            .addOnSuccessListener {
+                result.value = true
+                // Update successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value = false
+
+                // Handle failure scenarios if needed
+            }
+        return result
     }
 
 

@@ -7,9 +7,9 @@ class Constants {
     public var JOB_COLLECTION="JOBS"
     public var JOB_DELETION="JOBS_DELETE"
     public var DRAMA_COLLECTION="Drama"
-    public var SEASON_COLLECTION="Season"
+    public var TEAMCOLLECTION="TEAM"
     public var VIDEOMANAGEMENT_COLLECTION="ManageVideo"
-    public var ADMIN_COLLECTION="Admin"
+    public var COMPLETEDPROJECTS="Completed Projects"
 
 
 

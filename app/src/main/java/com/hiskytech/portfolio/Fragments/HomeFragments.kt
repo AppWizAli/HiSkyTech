@@ -6,7 +6,6 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -19,47 +18,52 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.hiskytech.portfolio.Adapters.AnnoucementAdapter
+import com.hiskytech.portfolio.Adapters.CompletedProjectAdapter
 import com.hiskytech.portfolio.Adapters.CoursesAdapter
 import com.hiskytech.portfolio.Adapters.JobAdapter
+import com.hiskytech.portfolio.Adapters.TeamAdapter
 import com.hiskytech.portfolio.Data.Constants
 import com.hiskytech.portfolio.Data.SharedPrefManager
 import com.hiskytech.portfolio.Data.Utils
 import com.hiskytech.portfolio.Models.AnnoucementModal
+import com.hiskytech.portfolio.Models.CompletedprojectModal
 import com.hiskytech.portfolio.Models.CourseModal
 import com.hiskytech.portfolio.Models.JobModal
+import com.hiskytech.portfolio.Models.TeamModal
 import com.hiskytech.portfolio.R
 import com.hiskytech.portfolio.ViewModels.CourseViewModal
+import com.hiskytech.portfolio.ViewModels.UserViewModal
 import com.hiskytech.portfolio.databinding.FragmentHomeFragmentsBinding
 
-class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapter.OnItemClickListener,AnnoucementAdapter.OnItemClickListener{
+class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapter.OnItemClickListener,AnnoucementAdapter.OnItemClickListener, CompletedProjectAdapter.OnItemClickListener,TeamAdapter.OnItemClickListener{
     private lateinit var binding: FragmentHomeFragmentsBinding
     private lateinit var dialogDetail: Dialog
     private lateinit var dialog: Dialog
-    private val db = Firebase.firestore
     private lateinit var courseViewModel: CourseViewModal
     private val IMAGE_PICKER_REQUEST_CODE = 123
     private lateinit var contants: Constants
     private lateinit var mContext: Context
     private var imageURI: Uri? = null
+    private lateinit var  teamModal:TeamModal
     private var imageUriSecond: Uri? = null
     private lateinit var jobModal: JobModal
     private lateinit var annoucementModal: AnnoucementModal
     private var getText: String = "view all"
-    private var imagecode: Int = 100
     private var imagecodeSecond: Int = 100
+    private lateinit var completedprojectModal: CompletedprojectModal
     private lateinit var courseModal: CourseModal
-    private var private = 110
     private var deleteDialog: AlertDialog? = null
-    private lateinit var thumnailview: ImageView
     private lateinit var utils: Utils
     private lateinit var constants: Constants
-    private lateinit var sharedPrefManager: SharedPrefManager
+    private val userViewModal : UserViewModal by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,6 +77,8 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
         courseModal = CourseModal()
         annoucementModal = AnnoucementModal()
         jobModal = JobModal()
+        completedprojectModal = CompletedprojectModal()
+        teamModal = TeamModal()
 
 
         binding.detailFloating.setOnClickListener()
@@ -82,6 +88,8 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
         setAdapterAnnoucement()
         setAdapter()
         setAdapterJobs()
+        setCompletedProjectAdapter()
+        setTeamAdapter()
 
         return binding.root
     }
@@ -193,6 +201,62 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
             dialog = Dialog(requireContext(), R.style.FullWidthDialog)
             dialog.setContentView(R.layout.dialogue_add_completed_projects)
             dialog.setCancelable(false)
+            var Project_title = dialog.findViewById<EditText>(R.id.project_title_editText)
+            var project_description = dialog.findViewById<EditText>(R.id.project_description_editText)
+            var Project_Duration = dialog.findViewById<EditText>(R.id.project_duration_editText)
+            var Client_FeedBack = dialog.findViewById<EditText>(R.id.client_feedback_editText)
+            var Achievement = dialog.findViewById<EditText>(R.id.achevement)
+            var projectImage = dialog.findViewById<TextView>(R.id.project_image)
+            var back = dialog.findViewById<Button>(R.id.back)
+            var Add = dialog.findViewById<Button>(R.id.add)
+            projectImage.setOnClickListener()
+            {
+                val pickImage =
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
+            }
+
+            back.setOnClickListener(){dialog.dismiss()}
+            Add.setOnClickListener(){
+
+                if (Project_title.text.toString().isEmpty() ||project_description.text.toString().isEmpty()||  Project_Duration.text.toString().isEmpty()|| Client_FeedBack.text.toString().isEmpty()||Achievement.text.toString().isEmpty() )
+                {
+                    Toast.makeText(mContext, "Please fill all the fields", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    completedprojectModal.project_title = Project_title.text.toString()
+                    completedprojectModal.project_description =
+                        project_description.text.toString()
+                    completedprojectModal.project_duration =
+                        Project_Duration.text.toString()
+                    completedprojectModal.client_feedback =
+                        Client_FeedBack.text.toString()
+                    completedprojectModal.acievement = Achievement.text.toString()
+                    if (imageURI != null)
+                    {
+                        uploadThumbnailImage(imageURI!!) { thumbnailUrl ->
+                            if (thumbnailUrl != null) {
+                                completedprojectModal.thumnail = thumbnailUrl
+
+                                courseViewModel.add_completed_course(completedprojectModal)
+                                    .observe(requireActivity())
+                                    { success ->
+                                        if (success) {
+                                            Toast.makeText(mContext, "Added", Toast.LENGTH_SHORT)
+                                                .show()
+                                            dialog.dismiss()
+                                            setCompletedProjectAdapter()
+                                        }
+
+                                    }
+                            }
+                        }
+
+                    }
+
+
+                }
+            }
 
             dialog.show()
         }
@@ -202,6 +266,62 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
             dialog = Dialog(requireContext(), R.style.FullWidthDialog)
             dialog.setContentView(R.layout.dialogue_add_team_member)
             dialog.setCancelable(false)
+
+            var member_name = dialog.findViewById<EditText>(R.id.editname)
+            var member_email = dialog.findViewById<EditText>(R.id.editemail)
+            var member_phone_number = dialog.findViewById<EditText>(R.id.editPhone)
+            var member_address = dialog.findViewById<EditText>(R.id.edit_adress)
+            var cancel = dialog.findViewById<Button>(R.id.cancel_btn)
+            var add = dialog.findViewById<Button>(R.id.add_btn)
+            var member_image = dialog.findViewById<ImageView>(R.id.imageprof)
+            cancel.setOnClickListener(){dialog.dismiss()}
+            member_image.setOnClickListener()
+            {
+                val pickImage =
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
+            }
+            add.setOnClickListener()
+            {
+                if (member_name.text.toString().isEmpty() ||member_email.text.toString().isEmpty()||  member_phone_number.text.toString().isEmpty()|| member_address.text.toString().isEmpty() )
+                {
+                    Toast.makeText(mContext, "Please fill all the fields", Toast.LENGTH_SHORT).show()
+                }
+                else{
+
+                    teamModal.member_name = member_name.text.toString()
+                    teamModal.member_email = member_email.text.toString()
+                    teamModal.member_Phone = member_phone_number.text.toString()
+                    teamModal.member_address = member_address.text.toString()
+                    if (imageURI != null)
+                    {
+                        uploadThumbnailImage(imageURI!!) { thumbnailUrl ->
+                            if (thumbnailUrl != null) {
+                                teamModal.thumnail = thumbnailUrl
+
+                                userViewModal.add_team_member(teamModal)
+                                    .observe(requireActivity())
+                                    { success ->
+                                        if (success) {
+                                            Toast.makeText(mContext, "Added", Toast.LENGTH_SHORT)
+                                                .show()
+                                            dialog.dismiss()
+                                            setTeamAdapter()
+                                        }
+
+                                    }
+                            }
+                        }
+
+                    }
+                    else{
+                        Toast.makeText(mContext, "uri is null ", Toast.LENGTH_SHORT).show()
+                    }
+
+
+                }
+
+            }
             dialog.show()
         }
         add_job.setOnClickListener()
@@ -250,6 +370,69 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
         }
 
         dialogDetail.show()
+    }
+    private fun setTeamAdapter()
+    {
+        val listjob = ArrayList<TeamModal>()
+
+        userViewModal.get_team_memeber_list().addOnSuccessListener() { taskResult ->
+            if (taskResult != null) {
+                if (taskResult.size() > 0) {
+                    for (document in taskResult) {
+                        listjob.add(document.toObject(TeamModal::class.java))
+                        listjob.sortBy { it.member_name }
+                    }
+                }
+                binding.recyclerViewTeam.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false)
+                binding.recyclerViewTeam.adapter = TeamAdapter(mContext, listjob.take(2), this@HomeFragments)
+                binding.viewAllmember.setOnClickListener()
+                {
+                    var showText = binding.viewAllmember.text
+                    if (showText == getText) {
+                        binding.recyclerViewTeam.adapter = TeamAdapter(mContext, listjob, this@HomeFragments)
+                        binding.viewAllmember.setText("Merge All")
+                    } else {
+                        binding.recyclerViewTeam.adapter = TeamAdapter(mContext, listjob.take(2), this@HomeFragments)
+                        binding.viewAllmember.setText(getText)
+                    }
+
+                }
+
+
+            }
+        }
+    }
+
+    private fun setCompletedProjectAdapter(){
+        val listjob = ArrayList<CompletedprojectModal>()
+
+        courseViewModel.get_complted_project_list().addOnSuccessListener() { taskResult ->
+            if (taskResult != null) {
+                if (taskResult.size() > 0) {
+                    for (document in taskResult) {
+                        listjob.add(document.toObject(CompletedprojectModal::class.java))
+                        listjob.sortBy { it.project_title }
+                    }
+                }
+                binding.rvCompltedProjects.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false)
+                binding.rvCompltedProjects.adapter = CompletedProjectAdapter(mContext, listjob.take(2), this@HomeFragments)
+                binding.viewallcompletedProjects.setOnClickListener()
+                {
+                    var showText = binding.viewallcompletedProjects.text
+                    if (showText == getText) {
+                        binding.rvCompltedProjects.adapter = CompletedProjectAdapter(mContext, listjob, this@HomeFragments)
+                        binding.viewallcompletedProjects.setText("Merge All")
+                    } else {
+                        binding.rvCompltedProjects.adapter = CompletedProjectAdapter(mContext, listjob.take(2), this@HomeFragments)
+                        binding.viewallcompletedProjects.setText(getText)
+                    }
+
+                }
+
+
+            }
+        }
+
     }
 
 
@@ -364,6 +547,13 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
                 imageUriSecond = data?.data
             } else {
                 imageURI = data?.data
+                val imageView = dialog.findViewById<ImageView>(R.id.imageprof)
+                context?.let {
+                    Glide.with(it)
+                        .load(imageURI)
+                        .into(imageView)
+                }
+
             }
 
 
@@ -737,6 +927,258 @@ class HomeFragments : Fragment(), CoursesAdapter.OnItemClickListener , JobAdapte
     }
 
     override fun onEditClick(annoucementModal: AnnoucementModal) {
+
+    }
+
+    override fun onItemClick(completedprojectModal: CompletedprojectModal) {
+
+    }
+
+    override fun onDeleteClick(completedprojectModal: CompletedprojectModal) {
+        val builder = AlertDialog.Builder(mContext)
+        builder.setTitle("Confirmation")
+            .setMessage("Are you sure you want to delete?")
+            .setPositiveButton("Yes") { _, _ ->
+                performDeleteActionProject(completedprojectModal)
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+        deleteDialog = builder.create()
+        deleteDialog?.show()
+    }
+    private fun performDeleteActionProject(completedprojectModal: CompletedprojectModal)
+    {
+        courseViewModel.deleteproject(completedprojectModal)
+            .observe(this@HomeFragments) { success ->
+                if (success) {
+                    Toast.makeText(
+                        mContext,
+                        "Project Deleted Successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    deleteDialog?.dismiss() // Dismiss the dialog here
+                    setAdapterJobs()
+                } else {
+                    Toast.makeText(
+                        mContext,
+                        constants.SOMETHING_WENT_WRONG_MESSAGE,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    deleteDialog?.dismiss() // Dismiss the dialog here
+                }
+            }
+    }
+
+    override fun onEditClick(completedprojectModal: CompletedprojectModal) {
+
+        val dialog = Dialog(mContext, R.style.FullWidthDialog)
+        dialog.setContentView(R.layout.dialogue_add_completed_projects)
+
+        var Project_title = dialog.findViewById<EditText>(R.id.project_title_editText)
+        var project_description = dialog.findViewById<EditText>(R.id.project_description_editText)
+        var Project_Duration = dialog.findViewById<EditText>(R.id.project_duration_editText)
+        var Client_FeedBack = dialog.findViewById<EditText>(R.id.client_feedback_editText)
+        var Achievement = dialog.findViewById<EditText>(R.id.achevement)
+        var projectImage = dialog.findViewById<TextView>(R.id.project_image)
+        var back = dialog.findViewById<Button>(R.id.back)
+        var Add = dialog.findViewById<Button>(R.id.add)
+
+        Project_title.setText(completedprojectModal.project_title)
+        project_description.setText(completedprojectModal.project_description)
+        Project_Duration.setText(completedprojectModal.project_duration)
+        Client_FeedBack.setText(completedprojectModal.client_feedback)
+        Achievement.setText(completedprojectModal.acievement)
+
+        dialog.setCancelable(false)
+
+        back.setOnClickListener { dialog.dismiss() }
+
+        projectImage.setOnClickListener {
+            val pickImage =
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
+        }
+
+        Add.setOnClickListener {
+            completedprojectModal.project_title = Project_title.text.toString()
+            completedprojectModal.project_description =
+                project_description.text.toString()
+            completedprojectModal.project_duration =
+                Project_Duration.text.toString()
+            completedprojectModal.client_feedback =
+                Client_FeedBack.text.toString()
+            completedprojectModal.acievement = Achievement.text.toString()
+
+            if (Project_title.text.toString().isEmpty() ||project_description.text.toString().isEmpty()||  Project_Duration.text.toString().isEmpty()|| Client_FeedBack.text.toString().isEmpty()||Achievement.text.toString().isEmpty() )
+            {
+                Toast.makeText(mContext, "Please fill all the fields", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                if (imageURI != null) {
+                    uploadThumbnailImage(imageURI!!) { thumbnailUrl ->
+                        if (thumbnailUrl != null) {
+                            completedprojectModal.thumnail = thumbnailUrl
+                            courseViewModel.edit_completed_project(completedprojectModal)
+                                .observe(requireActivity()) { success ->
+                                    if (success) {
+                                        Toast.makeText(
+                                            mContext,
+                                            " updated successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        setCompletedProjectAdapter()
+                                        dialog.dismiss()
+
+                                    } else {
+                                        utils.endLoadingAnimation()
+                                        Toast.makeText(
+                                            mContext,
+                                            "Failed to update the Course",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                        } else {
+                            Toast.makeText(
+                                mContext,
+                                "Failed to upload the thumbnail image.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "image uri is not selected",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+        dialog.show()
+
+    }
+
+    override fun onItemClick(teamModal: TeamModal) {
+
+    }
+
+    override fun onDeleteClick(teamModal: TeamModal) {
+        val builder = AlertDialog.Builder(mContext)
+        builder.setTitle("Confirmation")
+            .setMessage("Are you sure you want to delete?")
+            .setPositiveButton("Yes") { _, _ ->
+                performDeleteActionTeamMember(teamModal)
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+        deleteDialog = builder.create()
+        deleteDialog?.show()
+    }
+    private fun performDeleteActionTeamMember(teamModal: TeamModal)
+    {
+        userViewModal.deleteTeamMember(teamModal)
+            .observe(this@HomeFragments) { success ->
+                if (success) {
+                    Toast.makeText(
+                        mContext,
+                        "Team Deleted Successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    deleteDialog?.dismiss() // Dismiss the dialog here
+                    setTeamAdapter()
+                } else {
+                    Toast.makeText(
+                        mContext,
+                        constants.SOMETHING_WENT_WRONG_MESSAGE,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    deleteDialog?.dismiss() // Dismiss the dialog here
+                }
+            }
+    }
+
+    override fun onEditClick(teamModal: TeamModal) {
+
+        val dialog = Dialog(mContext, R.style.FullWidthDialog)
+        dialog.setContentView(R.layout.dialogue_add_team_member)
+
+        var member_name = dialog.findViewById<EditText>(R.id.editname)
+        var member_email = dialog.findViewById<EditText>(R.id.editemail)
+        var member_phone_number = dialog.findViewById<EditText>(R.id.editPhone)
+        var member_address = dialog.findViewById<EditText>(R.id.edit_adress)
+        var cancel = dialog.findViewById<Button>(R.id.cancel_btn)
+        var add = dialog.findViewById<Button>(R.id.add_btn)
+        var member_image = dialog.findViewById<ImageView>(R.id.imageprof)
+        cancel.setOnClickListener(){dialog.dismiss()}
+        member_image.setOnClickListener()
+        {
+            val pickImage =
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
+        }
+        member_name.setText(teamModal.member_name)
+        member_email.setText(teamModal.member_email)
+        member_phone_number.setText(teamModal.member_Phone)
+        member_address.setText(teamModal.member_address)
+
+        dialog.setCancelable(false)
+
+        add.setOnClickListener {
+            teamModal.member_name = member_name.text.toString()
+            teamModal.member_email = member_email.text.toString()
+            teamModal.member_Phone = member_phone_number.text.toString()
+            teamModal.member_address = member_address.text.toString()
+
+            if (member_name.text.toString().isEmpty() ||member_email.text.toString().isEmpty()||  member_phone_number.text.toString().isEmpty()|| member_address.text.toString().isEmpty() )
+            {
+                Toast.makeText(mContext, "Please fill all the fields", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                if (imageURI != null) {
+                    uploadThumbnailImage(imageURI!!) { thumbnailUrl ->
+                        if (thumbnailUrl != null) {
+                            teamModal.thumnail = thumbnailUrl
+                            userViewModal.edit_Team_member(teamModal)
+                                .observe(requireActivity()) { success ->
+                                    if (success) {
+                                        Toast.makeText(
+                                            mContext,
+                                            " updated successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        setTeamAdapter()
+                                        dialog.dismiss()
+
+                                    } else {
+                                        utils.endLoadingAnimation()
+                                        Toast.makeText(
+                                            mContext,
+                                            "Failed to update",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                        } else {
+                            Toast.makeText(
+                                mContext,
+                                "Failed to upload the thumbnail image.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "image uri is not selected",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+        dialog.show()
 
     }
 }

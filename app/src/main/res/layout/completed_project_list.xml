@@ -2,12 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@color/PrimaryVariant"
     android:layout_marginStart="3dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
 <androidx.cardview.widget.CardView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:backgroundTint="@color/PrimaryVariant"
     >
     <LinearLayout
         android:layout_width="200dp"
@@ -17,11 +18,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Android Development"
+            android:textColor="@color/white"
+            android:id="@+id/title"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="5dp"
             android:layout_gravity="center"
             />
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="180dp"
                 app:cardCornerRadius="20dp"
                 android:layout_marginHorizontal="5sp"
                 android:layout_marginTop="30dp"
@@ -42,12 +48,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="View Job"
+                android:text="View Project"
                 android:layout_toLeftOf="@+id/edit"
                 android:textColor="#FEC10F"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="20dp"
-                android:id="@+id/view_job"/>
+                android:id="@+id/view_project"/>
             <ImageView
                 android:id="@+id/edit"
                 android:layout_width="wrap_content"
@@ -64,6 +70,14 @@
                 android:layout_marginEnd="10dp"
                 android:src="@drawable/baseline_delete_24"/>
         </RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/uploadedAt"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+        />
 
 
     </LinearLayout>

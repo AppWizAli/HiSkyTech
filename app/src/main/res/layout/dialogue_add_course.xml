@@ -32,7 +32,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Course Title"
+        android:text="Course Description"
         android:layout_marginTop="18sp"
         android:textSize="19sp"
         android:layout_marginStart="20dp"

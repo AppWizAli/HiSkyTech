@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.QuerySnapshot
 import com.hiskytech.portfolio.Data.Repo
 import com.hiskytech.portfolio.Models.AnnoucementModal
+import com.hiskytech.portfolio.Models.CompletedprojectModal
 import com.hiskytech.portfolio.Models.CourseModal
 import com.hiskytech.portfolio.Models.JobModal
 
@@ -57,5 +58,25 @@ class CourseViewModal: ViewModel() {
     fun get_Annoucement_list():Task<QuerySnapshot>{
 
         return repo.get_Annoucement_list()
+    }
+
+    fun add_completed_course(completedprojectModal: CompletedprojectModal):LiveData<Boolean>
+    {
+        return repo.add_completed_course(completedprojectModal)
+
+    }
+
+    fun get_complted_project_list():Task<QuerySnapshot>
+    {
+return repo.get_complted_project_list()
+    }
+
+    fun deleteproject(completedprojectModal: CompletedprojectModal):LiveData<Boolean>{
+        return repo.deleteproject(completedprojectModal)
+    }
+
+    fun edit_completed_project(completedprojectModal: CompletedprojectModal):LiveData<Boolean>{
+
+        return repo.edit_completed_project(completedprojectModal)
     }
 }
